@@ -1,0 +1,1056 @@
+{
+  "id": "e3f2b845-8f2c-4b5a-9caf-eac1029d3e7e",
+  "revision": 0,
+  "last_node_id": 208,
+  "last_link_id": 406,
+  "nodes": [
+    {
+      "id": 116,
+      "type": "MarkdownNote",
+      "pos": [
+        -787.0974100000009,
+        5233.638270851134
+      ],
+      "size": [
+        450,
+        630
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note: MiniMax H3",
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "## MiniMax H3\n\n[MiniMax H3](https://www.minimax.io/blog/minimax-h3) is MiniMax's general-purpose, omni-modal generation model. It jointly understands text, image, video, and audio, and generates video with **native stereo audio**: voice, sound effects, and music are modeled jointly in a single forward pass, not layered on afterward. Output is up to 2K resolution, 24fps, and up to about 15 seconds.\n\n## About this workflow\n\nThis template runs the **Image to Video** task (`MiniMaxH3ImageToVideo` node), which covers both:\n\n- **t2va** (text-to-video), when no images are connected\n- **fl2va** (first/last-frame image-to-video), when `first_frame` and/or `last_frame` are connected\n\n**Key inputs**\n\n- **first_frame / last_frame**: optional keyframes; the model generates the motion between them\n- **prompt**: describe the shots, motion, and the accompanying audio (dialogue, SFX, music) in one block\n- **width / height**: set via Resolution Selector. H3's native canvas is a 768px short edge, capped at 768x1344 pixels, rounded to a multiple of 32\n- **duration (seconds)**: converted to a valid frame `length` by the Math Expression node, snapping up to the model's 17-frame-per-block (17k+5) grid at 24fps"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 207,
+      "type": "SaveAudioAdvanced",
+      "pos": [
+        943.2716711010145,
+        5569.259263882992
+      ],
+      "size": [
+        340.4051220006105,
+        160
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 390
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "SaveAudioAdvanced",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "audio/ComfyUI",
+        "mp3",
+        "128k"
+      ]
+    },
+    {
+      "id": 208,
+      "type": "77cc61c3-0a78-4c28-8758-a17e6e8d9d1c",
+      "pos": [
+        -186.60267398098904,
+        5350.651744307623
+      ],
+      "size": [
+        514.8760885443568,
+        304.0991735537191
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "video_vae",
+          "name": "vae_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "vae_name"
+          },
+          "link": null
+        },
+        {
+          "label": "audio_vae",
+          "name": "vae_name_1",
+          "type": "COMBO",
+          "widget": {
+            "name": "vae_name_1"
+          },
+          "link": null
+        },
+        {
+          "label": "duration",
+          "name": "value",
+          "type": "FLOAT",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            396
+          ]
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            397
+          ]
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            398
+          ]
+        },
+        {
+          "name": "VAE_1",
+          "type": "VAE",
+          "links": [
+            399
+          ]
+        },
+        {
+          "label": "frames",
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            400
+          ]
+        }
+      ],
+      "title": "model selector",
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {}
+        },
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "previewExposures": []
+      },
+      "widgets_values": [
+        "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+        "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+        "minimax_h3_video_vae_fp16.safetensors",
+        "minimax_h3_audio_vae_fp32.safetensors",
+        2
+      ]
+    },
+    {
+      "id": 205,
+      "type": "MiniMaxH3AudioGenerator",
+      "pos": [
+        462.1639014714363,
+        5335.052019498394
+      ],
+      "size": [
+        458.60255447032296,
+        459.5011728288173
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 396
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 397
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 398
+        },
+        {
+          "name": "audio_vae",
+          "type": "VAE",
+          "link": 399
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "widget": {
+            "name": "length"
+          },
+          "link": 400
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            389
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3AudioGenerator",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "A tough masculine British man with a deep gravelly voice exactly like Jason Statham speaking clear Russian with a strong British accent: \"Ну что, погнали? Ночь будет не сладкой!!!\". Confident, slightly smirking, energetic delivery. High quality studio audio, realistic voice, no background music.",
+        124,
+        789212256496059,
+        "randomize",
+        20,
+        "res_multistep",
+        "simple",
+        1
+      ]
+    },
+    {
+      "id": 206,
+      "type": "PreviewAudio",
+      "pos": [
+        947.3640546023431,
+        5352.435649509958
+      ],
+      "size": [
+        350.36520723932983,
+        159.04351006488014
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 389
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            390
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAudio",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 117,
+      "type": "MarkdownNote",
+      "pos": [
+        -1267.0974100000044,
+        5233.638270851134
+      ],
+      "size": [
+        453.2231404958677,
+        630.4132231404965
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note: Model Links",
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "## Model Links\n\n**vae**\n\n- [minimax_h3_video_vae_fp16.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors)\n- [minimax_h3_audio_vae_fp32.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors)\n\n**diffusion_models**\n\n- [minimax_h3_fl2va_pruned_int8_convrot.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors)\n\n**text_encoders**\n\n- [qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors)\n\n\n## Model Storage Location\n\n```\n📂 ComfyUI/\n├── 📂 models/\n│   ├── 📂 vae/\n│   │   ├── minimax_h3_video_vae_fp16.safetensors\n│   │   └── minimax_h3_audio_vae_fp32.safetensors\n│   ├── 📂 diffusion_models/\n│   │   └── minimax_h3_fl2va_pruned_int8_convrot.safetensors\n│   └── 📂 text_encoders/\n│       └── qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors\n```\n\n## Report Issue\n\nNote: Please update ComfyUI first ([guide](https://docs.comfy.org/installation/update_comfyui)) and prepare required models. Desktop/Cloud updates follow stable releases, so some nightly-supported models may not be available yet.\n\n- Cannot run / runtime errors: [ComfyUI/issues](https://github.com/comfyanonymous/ComfyUI/issues)\n- UI / frontend issues: [ComfyUI_frontend/issues](https://github.com/Comfy-Org/ComfyUI_frontend/issues)\n- Workflow issues: [workflow_templates/issues](https://github.com/Comfy-Org/workflow_templates/issues)\n"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    }
+  ],
+  "links": [
+    [
+      389,
+      205,
+      0,
+      206,
+      0,
+      "AUDIO"
+    ],
+    [
+      390,
+      206,
+      0,
+      207,
+      0,
+      "AUDIO"
+    ],
+    [
+      396,
+      208,
+      0,
+      205,
+      0,
+      "MODEL"
+    ],
+    [
+      397,
+      208,
+      1,
+      205,
+      1,
+      "CLIP"
+    ],
+    [
+      398,
+      208,
+      2,
+      205,
+      2,
+      "VAE"
+    ],
+    [
+      399,
+      208,
+      3,
+      205,
+      3,
+      "VAE"
+    ],
+    [
+      400,
+      208,
+      4,
+      205,
+      4,
+      "INT"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Models",
+      "bounding": [
+        -298.7266409231377,
+        5152.912225082561,
+        698.181873668324,
+        789.9999445134936
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 7,
+      "title": "sampling and decode",
+      "bounding": [
+        424.8002651077998,
+        5153.324746771123,
+        901.8766500641376,
+        789.5012338639735
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    }
+  ],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "77cc61c3-0a78-4c28-8758-a17e6e8d9d1c",
+        "version": 1,
+        "state": {
+          "lastGroupId": 7,
+          "lastNodeId": 208,
+          "lastLinkId": 406,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "model selector",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -456.72664092313784,
+            5557.494719514234,
+            128,
+            148
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            441.27335907686216,
+            5507.494719514234,
+            128,
+            148
+          ]
+        },
+        "inputs": [
+          {
+            "id": "1c1f6497-7b1c-49cc-8cbd-45bacbeef4d6",
+            "name": "unet_name",
+            "type": "COMBO",
+            "linkIds": [
+              401
+            ],
+            "pos": [
+              -352.72664092313784,
+              5581.494719514234
+            ]
+          },
+          {
+            "id": "07a8acdb-c3bc-4317-a168-dc52fad7a27c",
+            "name": "clip_name",
+            "type": "COMBO",
+            "linkIds": [
+              402
+            ],
+            "pos": [
+              -352.72664092313784,
+              5601.494719514234
+            ]
+          },
+          {
+            "id": "57b0676c-e0c1-45b0-978e-779e3b65026f",
+            "name": "vae_name",
+            "type": "COMBO",
+            "linkIds": [
+              403
+            ],
+            "label": "video_vae",
+            "pos": [
+              -352.72664092313784,
+              5621.494719514234
+            ]
+          },
+          {
+            "id": "d7a5efb3-9064-48ec-9a82-495341c57a9d",
+            "name": "vae_name_1",
+            "type": "COMBO",
+            "linkIds": [
+              404
+            ],
+            "label": "audio_vae",
+            "pos": [
+              -352.72664092313784,
+              5641.494719514234
+            ]
+          },
+          {
+            "id": "38153cdb-9a99-41a8-86b7-826db97366c1",
+            "name": "value",
+            "type": "FLOAT",
+            "linkIds": [
+              406
+            ],
+            "label": "duration",
+            "pos": [
+              -352.72664092313784,
+              5661.494719514234
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "fddf2e43-81a6-4c56-8fdf-4d9069a1675a",
+            "name": "MODEL",
+            "type": "MODEL",
+            "linkIds": [
+              394
+            ],
+            "localized_name": "МОДЕЛЬ",
+            "pos": [
+              465.27335907686216,
+              5531.494719514234
+            ]
+          },
+          {
+            "id": "7faf09b9-9b62-43cc-847f-68a53dff0215",
+            "name": "CLIP",
+            "type": "CLIP",
+            "linkIds": [
+              391
+            ],
+            "localized_name": "CLIP",
+            "pos": [
+              465.27335907686216,
+              5551.494719514234
+            ]
+          },
+          {
+            "id": "eb24e018-ee99-43c5-bd1a-e30237cecfe1",
+            "name": "VAE",
+            "type": "VAE",
+            "linkIds": [
+              392
+            ],
+            "localized_name": "VAE",
+            "pos": [
+              465.27335907686216,
+              5571.494719514234
+            ]
+          },
+          {
+            "id": "f7f66850-4843-4caf-a93a-43e1a4a788d5",
+            "name": "VAE_1",
+            "type": "VAE",
+            "linkIds": [
+              393
+            ],
+            "localized_name": "VAE_1",
+            "pos": [
+              465.27335907686216,
+              5591.494719514234
+            ]
+          },
+          {
+            "id": "a43a7a77-ef82-4e60-a734-573c85ae9433",
+            "name": "INT",
+            "type": "INT",
+            "linkIds": [
+              395
+            ],
+            "localized_name": "ЦЕЛОЕ",
+            "label": "frames",
+            "pos": [
+              465.27335907686216,
+              5611.494719514234
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 202,
+            "type": "ComfyMathExpression",
+            "pos": [
+              46.40289615083208,
+              5915.193042305385
+            ],
+            "size": [
+              360,
+              74
+            ],
+            "flags": {
+              "collapsed": true
+            },
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 358
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "ПЛАВАЮЩИЙ",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": []
+              },
+              {
+                "localized_name": "ЦЕЛОЕ",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  395
+                ]
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": []
+              }
+            ],
+            "properties": {
+              "ue_properties": {
+                "widget_ue_connectable": {},
+                "version": "7.8",
+                "input_ue_unconnectable": {}
+              },
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "max(5, round(a * 24)) + (5 - (max(5, round(a * 24)) % 17)) % 17"
+            ]
+          },
+          {
+            "id": 199,
+            "type": "UNETLoader",
+            "pos": [
+              -258.192098335548,
+              5248.840531193563
+            ],
+            "size": [
+              629.5893279618331,
+              105.70402088951687
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "название_unet",
+                "name": "unet_name",
+                "type": "COMBO",
+                "widget": {
+                  "name": "unet_name"
+                },
+                "link": 401
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "МОДЕЛЬ",
+                "name": "MODEL",
+                "type": "MODEL",
+                "links": [
+                  394
+                ]
+              }
+            ],
+            "properties": {
+              "ue_properties": {
+                "widget_ue_connectable": {},
+                "version": "7.8",
+                "input_ue_unconnectable": {}
+              },
+              "cnr_id": "comfy-core",
+              "ver": "0.30.1",
+              "Node name for S&R": "UNETLoader",
+              "models": [
+                {
+                  "name": "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+                  "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+                  "directory": "diffusion_models"
+                }
+              ]
+            },
+            "widgets_values": [
+              "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+              "default"
+            ],
+            "color": "#223",
+            "bgcolor": "#335"
+          },
+          {
+            "id": 197,
+            "type": "CLIPLoader",
+            "pos": [
+              -268.72664092313784,
+              5442.912225082561
+            ],
+            "size": [
+              640,
+              120
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "название_clip",
+                "name": "clip_name",
+                "type": "COMBO",
+                "widget": {
+                  "name": "clip_name"
+                },
+                "link": 402
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "CLIP",
+                "name": "CLIP",
+                "type": "CLIP",
+                "links": [
+                  391
+                ]
+              }
+            ],
+            "properties": {
+              "ue_properties": {
+                "widget_ue_connectable": {},
+                "version": "7.8",
+                "input_ue_unconnectable": {}
+              },
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "CLIPLoader",
+              "models": [
+                {
+                  "name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+                  "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+                  "directory": "text_encoders"
+                }
+              ]
+            },
+            "widgets_values": [
+              "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+              "minimax",
+              "default"
+            ]
+          },
+          {
+            "id": 195,
+            "type": "VAELoader",
+            "pos": [
+              -268.72664092313784,
+              5632.912225082561
+            ],
+            "size": [
+              640,
+              70
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "название_vae",
+                "name": "vae_name",
+                "type": "COMBO",
+                "widget": {
+                  "name": "vae_name"
+                },
+                "link": 403
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "VAE",
+                "name": "VAE",
+                "type": "VAE",
+                "links": [
+                  392
+                ]
+              }
+            ],
+            "properties": {
+              "ue_properties": {
+                "widget_ue_connectable": {},
+                "version": "7.8",
+                "input_ue_unconnectable": {}
+              },
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "VAELoader",
+              "models": [
+                {
+                  "name": "minimax_h3_video_vae_fp16.safetensors",
+                  "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors",
+                  "directory": "vae"
+                }
+              ]
+            },
+            "widgets_values": [
+              "minimax_h3_video_vae_fp16.safetensors"
+            ]
+          },
+          {
+            "id": 196,
+            "type": "VAELoader",
+            "pos": [
+              -268.72664092313784,
+              5772.912225082561
+            ],
+            "size": [
+              650,
+              70
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "название_vae",
+                "name": "vae_name",
+                "type": "COMBO",
+                "widget": {
+                  "name": "vae_name"
+                },
+                "link": 404
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "VAE",
+                "name": "VAE",
+                "type": "VAE",
+                "links": [
+                  393
+                ]
+              }
+            ],
+            "properties": {
+              "ue_properties": {
+                "widget_ue_connectable": {},
+                "version": "7.8",
+                "input_ue_unconnectable": {}
+              },
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "VAELoader",
+              "models": [
+                {
+                  "name": "minimax_h3_audio_vae_fp32.safetensors",
+                  "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors",
+                  "directory": "vae"
+                }
+              ]
+            },
+            "widgets_values": [
+              "minimax_h3_audio_vae_fp32.safetensors"
+            ]
+          },
+          {
+            "id": 201,
+            "type": "PrimitiveFloat",
+            "pos": [
+              -259.7923941720834,
+              5886.148907834904
+            ],
+            "size": [
+              270,
+              58
+            ],
+            "flags": {
+              "collapsed": false
+            },
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "значение",
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 406
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "ПЛАВАЮЩИЙ",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  358
+                ]
+              }
+            ],
+            "title": "Float (duration)",
+            "properties": {
+              "ue_properties": {
+                "widget_ue_connectable": {},
+                "version": "7.8",
+                "input_ue_unconnectable": {}
+              },
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              2
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 358,
+            "origin_id": 201,
+            "origin_slot": 0,
+            "target_id": 202,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 394,
+            "origin_id": 199,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "MODEL"
+          },
+          {
+            "id": 391,
+            "origin_id": 197,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "CLIP"
+          },
+          {
+            "id": 392,
+            "origin_id": 195,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "VAE"
+          },
+          {
+            "id": 393,
+            "origin_id": 196,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "VAE"
+          },
+          {
+            "id": 395,
+            "origin_id": 202,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 4,
+            "type": "INT"
+          },
+          {
+            "id": 401,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 199,
+            "target_slot": 0,
+            "type": "COMBO"
+          },
+          {
+            "id": 402,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 197,
+            "target_slot": 0,
+            "type": "COMBO"
+          },
+          {
+            "id": 403,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 195,
+            "target_slot": 0,
+            "type": "COMBO"
+          },
+          {
+            "id": 404,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 196,
+            "target_slot": 0,
+            "type": "COMBO"
+          },
+          {
+            "id": 406,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 201,
+            "target_slot": 0,
+            "type": "FLOAT"
+          }
+        ],
+        "extra": {
+          "ue_links": []
+        }
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "frontendVersion": "1.48.7",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true,
+    "ue_links": [],
+    "anomalous_hashes": {
+      "208_minimax_h3_fl2va_pruned_int8_convrot.safetensors": {
+        "hash": "",
+        "size": 20970379616
+      },
+      "208_minimax_h3_video_vae_fp16.safetensors": {
+        "hash": "",
+        "size": 5207808496
+      },
+      "208_minimax_h3_audio_vae_fp32.safetensors": {
+        "hash": "",
+        "size": 605254808
+      }
+    },
+    "links_added_by_ue": [],
+    "ds": {
+      "scale": 0.8264462809917354,
+      "offset": [
+        828.4309091662094,
+        -5056.576744266467
+      ]
+    }
+  },
+  "version": 0.4
+}
