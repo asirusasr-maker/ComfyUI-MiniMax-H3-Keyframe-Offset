@@ -1,0 +1,1 @@
+# ComfyUI-MiniMax-H3-Keyframe-Offset
