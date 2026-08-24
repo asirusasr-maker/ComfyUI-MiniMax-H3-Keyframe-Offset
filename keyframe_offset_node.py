@@ -1,5 +1,6 @@
 import math
 import torch
+import torchaudio
 import nodes
 import comfy.model_management
 import comfy.nested_tensor
@@ -11,6 +12,7 @@ import node_helpers
 CANVAS_MULTIPLE = 32
 BASE_SHORT_EDGE = 768
 MAX_PIXELS = 768 * 1344
+REF_IMAGE_SHORT_EDGE = 2048
 FPS = 24
 AUDIO_LATENT_FPS = 40
 AUDIO_SAMPLE_RATE = 32000
@@ -33,6 +35,16 @@ def _resize(image, width, height, crop):
     samples = comfy.utils.common_upscale(samples, width, height, "lanczos", crop)
     return samples.movedim(1, -1)
 
+def _encode_ref_audio(audio_vae, audio):
+    """Native MiniMax H3 ref-audio encode. Returns (latent [1,32,2,T], T)."""
+    waveform = audio["waveform"]  # [B, C, L]
+    sr = audio["sample_rate"]
+    vae_sr = getattr(audio_vae, "audio_sample_rate", 32000)
+    if sr != vae_sr:
+        waveform = torchaudio.functional.resample(waveform, sr, vae_sr)
+    z = audio_vae.encode(waveform[:1].movedim(1, -1))  # [1, 32, 2, T]
+    return z, z.shape[-1]
+
 def _empty_av_latent(width, height, length, batch_size=1):
     frame_count, latent_t, audio_t = temporal_shape(length)
     video = torch.zeros([batch_size, 24, latent_t, height // 16, width // 16],
@@ -43,7 +55,6 @@ def _empty_av_latent(width, height, length, batch_size=1):
 
 
 def _to_audio_dict(decoded, sample_rate=AUDIO_SAMPLE_RATE):
-    """Normalize VAE decode output to ComfyUI AUDIO format: {"waveform": [B,C,L], "sample_rate": int}."""
     if isinstance(decoded, dict):
         waveform = decoded.get("waveform", decoded)
         sample_rate = int(decoded.get("sample_rate", sample_rate))
@@ -67,6 +78,52 @@ def _to_audio_dict(decoded, sample_rate=AUDIO_SAMPLE_RATE):
         "waveform": waveform.float().contiguous().cpu(),
         "sample_rate": int(sample_rate),
     }
+
+
+def _build_ref2va_refs(vae, audio_vae, width, height, ref_image_size, ref_image, ref_audio):
+    """Build native-style ref_items (tokenizer) + ref_blocks (DiT minimax_refs).
+
+    Order matches MiniMaxH3ReferenceToVideo:
+      images first -> standalone audio last.
+    Ordinals are 1-based: <Picture 1>, <Audio 1>.
+    """
+    ref_items = []
+    ref_blocks = []
+
+    if ref_image is not None:
+        img = ref_image[:1]
+        h, w = img.shape[1], img.shape[2]
+        if ref_image_size == "match":
+            scale = min(1.0, math.sqrt((width * height) / max(1, w * h)))
+        else:
+            scale = min(1.0, REF_IMAGE_SHORT_EDGE / max(1, min(w, h)))
+        tw = max(CANVAS_MULTIPLE, round(w * scale / CANVAS_MULTIPLE) * CANVAS_MULTIPLE)
+        th = max(CANVAS_MULTIPLE, round(h * scale / CANVAS_MULTIPLE) * CANVAS_MULTIPLE)
+        resized = _resize(img, tw, th, "disabled")
+        z = vae.encode(resized)
+        ref_items.append({"type": "image", "data": resized})
+        ref_blocks.append({
+            "kind": "image",
+            "latent_h": th // 16,
+            "latent_w": tw // 16,
+            "latent": z,
+        })
+
+    if ref_audio is not None:
+        if ref_image is None:
+            print(
+                "[MiniMax H3 Audio Generator] WARNING: native H3 prefers a visual anchor "
+                "(ref_image) together with ref_audio. Voice clone may be weaker without it."
+            )
+        audio_latent, ref_audio_t = _encode_ref_audio(audio_vae, ref_audio)
+        ref_items.append({"type": "audio"})
+        ref_blocks.append({
+            "kind": "audio",
+            "ref_audio_t": ref_audio_t,
+            "audio_latent": audio_latent,
+        })
+
+    return ref_items, ref_blocks
 
 
 class MiniMaxH3KeyframeOffset:
@@ -144,9 +201,14 @@ class MiniMaxH3KeyframeOffset:
 
 
 class MiniMaxH3AudioGenerator:
-    """All-in-one MiniMax H3 Audio Generator.
+    """All-in-one MiniMax H3 Audio Generator with optional Ref2VA-style refs.
 
-    Uses sample_custom. CFG hardcoded to 1.0 (native H3 is guidance-distilled).
+    When use_references is on, builds native minimax_ref_items / minimax_refs
+    (same path as MiniMax H3 Reference to Video), simplified to:
+      - one ref image  -> <Picture 1>
+      - one ref audio  -> <Audio 1>
+
+    Output is always AUDIO only. CFG hardcoded to 1.0.
     """
     @classmethod
     def INPUT_TYPES(s):
@@ -160,7 +222,7 @@ class MiniMaxH3AudioGenerator:
                     "multiline": True,
                     "dynamic_prompts": True,
                     "default": "bird singing, forest ambience",
-                    "tooltip": "Describe the sound you want to generate"
+                    "tooltip": "Text prompt. With refs enabled, refer to them as <Picture 1> and <Audio 1>."
                 }),
                 "length": ("INT", {
                     "default": 124,
@@ -190,6 +252,22 @@ class MiniMaxH3AudioGenerator:
                     "step": 0.01,
                     "tooltip": "Denoise strength (1.0 = full generation)"
                 }),
+                "use_references": ("BOOLEAN", {
+                    "default": False,
+                    "tooltip": "Enable Ref2VA-style <Picture 1> / <Audio 1> conditioning (native minimax_refs path)."
+                }),
+                "ref_image_size": (["match", "max"], {
+                    "default": "match",
+                    "tooltip": "Reference image sizing (same as native Reference to Video). 'max' = 2048 short edge, slower but better identity."
+                }),
+            },
+            "optional": {
+                "ref_image": ("IMAGE", {
+                    "tooltip": "Reference image -> <Picture 1> in the prompt"
+                }),
+                "ref_audio": ("AUDIO", {
+                    "tooltip": "Reference audio -> <Audio 1> in the prompt (voice / style). Prefer also connecting ref_image."
+                }),
             },
         }
 
@@ -198,15 +276,41 @@ class MiniMaxH3AudioGenerator:
     FUNCTION = "execute"
     CATEGORY = "model/conditioning/minimax"
 
-    def execute(self, model, clip, vae, audio_vae, prompt, length, seed, steps, sampler_name, scheduler, denoise=1.0):
+    def execute(self, model, clip, vae, audio_vae, prompt, length, seed, steps, sampler_name, scheduler,
+                denoise=1.0, use_references=False, ref_image_size="match",
+                ref_image=None, ref_audio=None):
         cfg = 1.0  # native MiniMax H3 is guidance-distilled
 
+        # Target canvas for empty AV latent (audio-focused; video branch is placeholder)
         width, height = 320, 320
         latent, frame_count = _empty_av_latent(width, height, length)
 
-        tokens = clip.tokenize(prompt, images=[])
-        positive = clip.encode_from_tokens_scheduled(tokens)
-        positive = node_helpers.conditioning_set_values(positive, {"minimax_frame_count": frame_count})
+        # --- conditioning ---
+        if use_references and (ref_image is not None or ref_audio is not None):
+            # Use generation-sized canvas metrics for 'match' scale of the ref image
+            # so identity refs are sized relative to a real H3 canvas, not 320x320.
+            ref_w, ref_h = 320, 320
+            ref_items, ref_blocks = _build_ref2va_refs(
+                vae, audio_vae, ref_w, ref_h, ref_image_size, ref_image, ref_audio
+            )
+            # Native tokenizer path — same as MiniMaxH3ReferenceToVideo
+            tokens = clip.tokenize(prompt, minimax_ref_items=ref_items)
+            positive = clip.encode_from_tokens_scheduled(tokens)
+            if ref_blocks:
+                positive = node_helpers.conditioning_set_values(positive, {
+                    "minimax_refs": ref_blocks,
+                    "minimax_frame_count": frame_count,
+                })
+            else:
+                positive = node_helpers.conditioning_set_values(positive, {
+                    "minimax_frame_count": frame_count,
+                })
+        else:
+            tokens = clip.tokenize(prompt, images=[])
+            positive = clip.encode_from_tokens_scheduled(tokens)
+            positive = node_helpers.conditioning_set_values(positive, {
+                "minimax_frame_count": frame_count,
+            })
 
         negative = []
 
