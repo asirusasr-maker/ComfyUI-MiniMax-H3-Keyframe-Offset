@@ -1,6 +1,6 @@
 import math
 import torch
-import torchaudio
+import comfy.audio
 import nodes
 import comfy.model_management
 import comfy.nested_tensor
@@ -41,7 +41,7 @@ def _encode_ref_audio(audio_vae, audio):
     sr = audio["sample_rate"]
     vae_sr = getattr(audio_vae, "audio_sample_rate", 32000)
     if sr != vae_sr:
-        waveform = torchaudio.functional.resample(waveform, sr, vae_sr)
+        waveform = comfy.audio.resample(waveform, sr, vae_sr)
     z = audio_vae.encode(waveform[:1].movedim(1, -1))  # [1, 32, 2, T]
     return z, z.shape[-1]
 
@@ -192,9 +192,10 @@ class MiniMaxH3KeyframeOffset:
         if keyframes:
             for kf in keyframes:
                 kf["latent"] = vae.encode(kf.pop("image"))
+            # Native ComfyUI MiniMax H3 reads resolved_frame_index directly
+            # from minimax_keyframes. No global PackedLayout patch is needed.
             cond = node_helpers.conditioning_set_values(cond, {
                 "minimax_keyframes": keyframes,
-                "minimax_frame_count": frame_count,
             })
 
         return (cond, latent)
@@ -299,18 +300,12 @@ class MiniMaxH3AudioGenerator:
             if ref_blocks:
                 positive = node_helpers.conditioning_set_values(positive, {
                     "minimax_refs": ref_blocks,
-                    "minimax_frame_count": frame_count,
-                })
-            else:
-                positive = node_helpers.conditioning_set_values(positive, {
-                    "minimax_frame_count": frame_count,
                 })
         else:
             tokens = clip.tokenize(prompt, images=[])
             positive = clip.encode_from_tokens_scheduled(tokens)
-            positive = node_helpers.conditioning_set_values(positive, {
-                "minimax_frame_count": frame_count,
-            })
+            # The target duration is represented by the AV latent itself.
+            # Current native H3 conditioning does not require minimax_frame_count.
 
         negative = []
 

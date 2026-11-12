@@ -34,7 +34,7 @@
 | Произвольные keyframe | First/last кадры можно ставить на любой индекс внутри клипа |
 | Безопасный clamp offset | Offset всегда ограничивается диапазоном `[0, frame_count-1]` по реальной длине |
 | Внешний `length` | Если длину задаёт другая нода, clamp всё равно идёт по вычисленному `frame_count` |
-| Обход ограничения ядра | Патч `PackedLayout` при загрузке — ненулевые индексы keyframe принимаются core |
+| Нативное размещение кадров | Используется штатный `minimax_keyframes`; глобальные классы ComfyUI не изменяются |
 | Аудио «всё в одном» | Одна нода: промпт → шум → сэмплинг → Audio VAE decode → ComfyUI `AUDIO` |
 | Нативный путь H3 | `comfy.sample.sample_custom`, `cfg=1.0` (guidance-distilled) |
 | **Клонирование голоса** | Подайте `ref_audio` — модель копирует тембр/стиль и генерирует новое аудио |
@@ -122,7 +122,7 @@ ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-MiniMax-H3-Keyframe-Offset
 
 | Имя | Тип | Описание |
 |-----|-----|----------|
-| `positive` | CONDITIONING | Conditioning с `minimax_keyframes` и `minimax_frame_count` |
+| `positive` | CONDITIONING | Conditioning со штатным `minimax_keyframes` |
 | `latent` | LATENT | Пустой AV NestedTensor latent для семплинга |
 
 #### Поведение
@@ -137,7 +137,7 @@ ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-MiniMax-H3-Keyframe-Offset
 ```
 
 5. First frame: resize с `crop="disabled"`. Last frame: `crop="center"`.
-6. При загрузке патчится `PackedLayout`, чтобы ненулевые `resolved_frame_index` принимались ядром.
+6. Индексы кадров передаются через штатное поле `minimax_keyframes`. Пакет не изменяет `PackedLayout` и другие глобальные объекты ComfyUI.
 
 #### Типичный граф
 
@@ -278,9 +278,9 @@ ref_audio:  (опционально) короткая запись дождя д
 
 Частота audio latent — **40 Hz** (800 сэмплов на latent-кадр при 32 kHz).
 
-### Патч PackedLayout
+### Работа с keyframe без патчей
 
-При импорте патчится `PackedLayout.__init__`: временно подставляются нулевые индексы для прохождения проверки ядра, затем восстанавливаются реальные индексы и пересчитываются temporal `position_ids`.
+Эта версия не патчит `PackedLayout`, не подменяет методы классов и не изменяет глобальное состояние ComfyUI. Индекс каждого кадра передаётся через штатное поле conditioning `minimax_keyframes`. Требуется актуальная версия ComfyUI, в которой MiniMax H3 поддерживает произвольные индексы keyframe (это поддерживается текущей upstream-реализацией).
 
 ### Формат аудио
 

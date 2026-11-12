@@ -1,1 +1,1 @@
-# No external dependencies beyond ComfyUI core (torch, comfy)
+# No external pip dependencies. Uses ComfyUI core modules (including comfy.audio).
