@@ -1,0 +1,1 @@
+# Voice Studio 0.5.2 — Tag Picker\n\n- Added cursor-position tag picker for Single Voice and Dual Voice Dialogue text fields.\n- Tag library categories: emotions, delivery, reactions, pauses.\n- Added custom tag insertion.\n- No changes to sampling, voice-reference conditioning, duration estimation, or audio assembly.\n- Based on validated 0.5.1 baseline.\n

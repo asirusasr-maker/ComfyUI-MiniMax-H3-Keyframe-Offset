@@ -1,53 +1,23 @@
 {
   "id": "e3f2b845-8f2c-4b5a-9caf-eac1029d3e7e",
   "revision": 0,
-  "last_node_id": 210,
-  "last_link_id": 408,
+  "last_node_id": 262,
+  "last_link_id": 563,
   "nodes": [
-    {
-      "id": 116,
-      "type": "MarkdownNote",
-      "pos": [
-        -787.0974100000009,
-        5233.638270851134
-      ],
-      "size": [
-        450,
-        630
-      ],
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note: MiniMax H3",
-      "properties": {
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.8",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        "## MiniMax H3\n\n[MiniMax H3](https://www.minimax.io/blog/minimax-h3) is MiniMax's general-purpose, omni-modal generation model. It jointly understands text, image, video, and audio, and generates video with **native stereo audio**: voice, sound effects, and music are modeled jointly in a single forward pass, not layered on afterward. Output is up to 2K resolution, 24fps, and up to about 15 seconds.\n\n## About this workflow\n\nThis template runs the **Image to Video** task (`MiniMaxH3ImageToVideo` node), which covers both:\n\n- **t2va** (text-to-video), when no images are connected\n- **fl2va** (first/last-frame image-to-video), when `first_frame` and/or `last_frame` are connected\n\n**Key inputs**\n\n- **first_frame / last_frame**: optional keyframes; the model generates the motion between them\n- **prompt**: describe the shots, motion, and the accompanying audio (dialogue, SFX, music) in one block\n- **width / height**: set via Resolution Selector. H3's native canvas is a 768px short edge, capped at 768x1344 pixels, rounded to a multiple of 32\n- **duration (seconds)**: converted to a valid frame `length` by the Math Expression node, snapping up to the model's 17-frame-per-block (17k+5) grid at 24fps"
-      ],
-      "color": "#222",
-      "bgcolor": "#000"
-    },
     {
       "id": 207,
       "type": "SaveAudioAdvanced",
       "pos": [
-        943.2716711010145,
-        5569.259263882992
+        956.1887512269739,
+        5446.310884172491
       ],
       "size": [
         340.4051220006105,
         160
       ],
       "flags": {},
-      "order": 7,
-      "mode": 0,
+      "order": 16,
+      "mode": 4,
       "inputs": [
         {
           "name": "audio",
@@ -75,28 +45,35 @@
       "widgets_values": [
         "audio/ComfyUI",
         "mp3",
-        "128k"
-      ]
+        "V0"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "audio/ComfyUI",
+        "format": "mp3",
+        "format.quality": "V0"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
     },
     {
       "id": 206,
       "type": "PreviewAudio",
       "pos": [
-        947.3640546023431,
-        5352.435649509958
+        949.252864630488,
+        5236.59753187327
       ],
       "size": [
-        350.36520723932983,
-        159.04351006488014
+        349.538760958338,
+        159.86998156701065
       ],
       "flags": {},
-      "order": 6,
-      "mode": 0,
+      "order": 11,
+      "mode": 4,
       "inputs": [
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 389
+          "link": 520
         }
       ],
       "outputs": [
@@ -118,21 +95,24 @@
           "version": "7.8"
         }
       },
-      "widgets_values": []
+      "widgets_values": [],
+      "widgets_values_named": {},
+      "color": "#222",
+      "bgcolor": "#000"
     },
     {
       "id": 117,
       "type": "MarkdownNote",
       "pos": [
-        -1267.0974100000044,
-        5233.638270851134
+        -760.7337736363681,
+        5181.820061289695
       ],
       "size": [
         453.2231404958677,
         630.4132231404965
       ],
       "flags": {},
-      "order": 1,
+      "order": 0,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -145,108 +125,27 @@
         }
       },
       "widgets_values": [
-        "## Model Links\n\n**vae**\n\n- [minimax_h3_video_vae_fp16.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors)\n- [minimax_h3_audio_vae_fp32.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors)\n\n**diffusion_models**\n\n- [minimax_h3_fl2va_pruned_int8_convrot.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors)\n\n**text_encoders**\n\n- [qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors)\n\n\n## Model Storage Location\n\n```\n📂 ComfyUI/\n├── 📂 models/\n│   ├── 📂 vae/\n│   │   ├── minimax_h3_video_vae_fp16.safetensors\n│   │   └── minimax_h3_audio_vae_fp32.safetensors\n│   ├── 📂 diffusion_models/\n│   │   └── minimax_h3_fl2va_pruned_int8_convrot.safetensors\n│   └── 📂 text_encoders/\n│       └── qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors\n```\n\n## Report Issue\n\nNote: Please update ComfyUI first ([guide](https://docs.comfy.org/installation/update_comfyui)) and prepare required models. Desktop/Cloud updates follow stable releases, so some nightly-supported models may not be available yet.\n\n- Cannot run / runtime errors: [ComfyUI/issues](https://github.com/comfyanonymous/ComfyUI/issues)\n- UI / frontend issues: [ComfyUI_frontend/issues](https://github.com/Comfy-Org/ComfyUI_frontend/issues)\n- Workflow issues: [workflow_templates/issues](https://github.com/Comfy-Org/workflow_templates/issues)\n"
+        "## Model Links\n\n**vae**\n\n- [minimax_h3_video_vae_fp16.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors)\n- [minimax_h3_audio_vae_fp32.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors)\n\n**diffusion_models**\n\n- [minimax_h3_ref2va_pruned_int8_convrot.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors)\n\n**text_encoders**\n\n- [qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors)\n\n\n## Model Storage Location\n\n```\n📂 ComfyUI/\n├── 📂 models/\n│   ├── 📂 vae/\n│   │   ├── minimax_h3_video_vae_fp16.safetensors\n│   │   └── minimax_h3_audio_vae_fp32.safetensors\n│   ├── 📂 diffusion_models/\n│   │   └── minimax_h3_ref2va_pruned_int8_convrot.safetensors\n│   └── 📂 text_encoders/\n│       └── qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors\n```\n\n## Author's node\n\n[ComfyUI-MiniMax-H3-Keyframe-Offset](https://github.com/comfyanonymous/ComfyUI/issues)\n\nuse command in \"custom_nodes\" folder \"git clone https://github.com/asirusasr-maker/ComfyUI-MiniMax-H3-Keyframe-Offset.git\"\n"
       ],
+      "widgets_values_named": {
+        "text": "## Model Links\n\n**vae**\n\n- [minimax_h3_video_vae_fp16.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors)\n- [minimax_h3_audio_vae_fp32.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors)\n\n**diffusion_models**\n\n- [minimax_h3_ref2va_pruned_int8_convrot.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors)\n\n**text_encoders**\n\n- [qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors)\n\n\n## Model Storage Location\n\n```\n📂 ComfyUI/\n├── 📂 models/\n│   ├── 📂 vae/\n│   │   ├── minimax_h3_video_vae_fp16.safetensors\n│   │   └── minimax_h3_audio_vae_fp32.safetensors\n│   ├── 📂 diffusion_models/\n│   │   └── minimax_h3_ref2va_pruned_int8_convrot.safetensors\n│   └── 📂 text_encoders/\n│       └── qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors\n```\n\n## Author's node\n\n[ComfyUI-MiniMax-H3-Keyframe-Offset](https://github.com/comfyanonymous/ComfyUI/issues)\n\nuse command in \"custom_nodes\" folder \"git clone https://github.com/asirusasr-maker/ComfyUI-MiniMax-H3-Keyframe-Offset.git\"\n"
+      },
       "color": "#222",
       "bgcolor": "#000"
-    },
-    {
-      "id": 205,
-      "type": "MiniMaxH3AudioGenerator",
-      "pos": [
-        444.5639014714359,
-        5270.1520362830615
-      ],
-      "size": [
-        471.802554470323,
-        543.6999999999998
-      ],
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 396
-        },
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 397
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 398
-        },
-        {
-          "name": "audio_vae",
-          "type": "VAE",
-          "link": 399
-        },
-        {
-          "name": "ref_audio",
-          "type": "AUDIO",
-          "link": 407
-        },
-        {
-          "name": "ref_image",
-          "type": "IMAGE",
-          "link": 408
-        },
-        {
-          "name": "length",
-          "type": "INT",
-          "widget": {
-            "name": "length"
-          },
-          "link": 400
-        }
-      ],
-      "outputs": [
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "links": [
-            389
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "MiniMaxH3AudioGenerator",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        "A tough masculine British man with a deep gravelly voice exactly like Jason Statham speaking clear Russian with a strong British accent: \"Ну что, погнали? Ночь будет не сладкой!!!\". Confident, slightly smirking, energetic delivery. High quality studio audio, realistic voice, no background music.",
-        124,
-        789212256496059,
-        "randomize",
-        20,
-        "res_multistep",
-        "simple",
-        1,
-        true,
-        "match"
-      ]
     },
     {
       "id": 209,
       "type": "LoadAudio",
       "pos": [
-        -262.5686975654392,
-        5622.034226750392
+        -243.17495816748885,
+        5588.621759968916
       ],
       "size": [
         309.06640625,
         136
       ],
       "flags": {},
-      "order": 2,
+      "order": 1,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -254,81 +153,45 @@
           "name": "AUDIO",
           "type": "AUDIO",
           "links": [
-            407
+            543,
+            563
           ]
         }
       ],
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.33.1",
+        "Node name for S&R": "LoadAudio",
         "ue_properties": {
           "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
-        "Node name for S&R": "LoadAudio"
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
       },
       "widgets_values": [
-        "track_c1e3e492.mp3",
-        null,
+        "ComfyUI_00039.mp3",
         ""
-      ]
-    },
-    {
-      "id": 210,
-      "type": "LoadImage",
-      "pos": [
-        72.8858478891062,
-        5613.852408568575
       ],
-      "size": [
-        309.06640625,
-        314
-      ],
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            408
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.33.1",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
-        "Node name for S&R": "LoadImage"
+      "widgets_values_named": {
+        "audio": "ComfyUI_00039.mp3",
+        "upload": ""
       },
-      "widgets_values": [
-        "A_transformational_photo_of_this_202606090050.jpeg",
-        "image"
-      ]
+      "color": "#222",
+      "bgcolor": "#000"
     },
     {
       "id": 208,
       "type": "77cc61c3-0a78-4c28-8758-a17e6e8d9d1c",
       "pos": [
-        -235.69358307189808,
-        5266.106317505419
+        -243.42611500277715,
+        5235.7592607389615
       ],
       "size": [
-        514.8760885443568,
-        304.0991735537191
+        651.239724907993,
+        302.4463314340128
       ],
       "flags": {},
-      "order": 4,
+      "order": 2,
       "mode": 0,
       "inputs": [
         {
@@ -364,28 +227,36 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            396
+            522,
+            535,
+            557
           ]
         },
         {
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            397
+            523,
+            536,
+            558
           ]
         },
         {
           "name": "VAE",
           "type": "VAE",
           "links": [
-            398
+            524,
+            537,
+            559
           ]
         },
         {
           "name": "VAE_1",
           "type": "VAE",
           "links": [
-            399
+            525,
+            538,
+            560
           ]
         },
         {
@@ -393,7 +264,7 @@
           "name": "INT",
           "type": "INT",
           "links": [
-            400
+            530
           ]
         }
       ],
@@ -408,22 +279,952 @@
         "previewExposures": []
       },
       "widgets_values": [
-        "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+        "MiniMax-H3-Ref2VA-NEXORA-V2.safetensors",
         "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
-        "minimax_h3_video_vae_fp16.safetensors",
+        "minimax_h3_video_vae_int8_convrot.safetensors",
         "minimax_h3_audio_vae_fp32.safetensors",
-        2
-      ]
+        8,
+        "comfy kitchen attention"
+      ],
+      "widgets_values_named": {
+        "unet_name": "MiniMax-H3-Ref2VA-NEXORA-V2.safetensors",
+        "clip_name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+        "vae_name": "minimax_h3_video_vae_int8_convrot.safetensors",
+        "vae_name_1": "minimax_h3_audio_vae_fp32.safetensors",
+        "value": 8,
+        "attention": "comfy kitchen attention"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 213,
+      "type": "easy showAnything",
+      "pos": [
+        936.7658441648375,
+        5666.810103037483
+      ],
+      "size": [
+        393.09008749709176,
+        531.4238194789432
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 12,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "anything",
+          "shape": 7,
+          "type": "*",
+          "link": 521
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "*",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-easy-use",
+        "ver": "1.4.1",
+        "Node name for S&R": "easy showAnything",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "Soft erotic ambient music for tender intimate sex.\n\nSlow tempo (around 60–75 BPM), warm and sensual atmosphere.Style:\nSoft deep bass pulse\nGentle warm pads\nDelicate piano or soft electric piano notes\nLight breathy female vocal textures (wordless, very subtle)\nSmooth atmospheric layers\nQuiet intimate reverb\nMood: sensual, emotional, slow, romantic and erotic at the same time.\n\nNo heavy beats, no aggressive sounds, no lyrics.\n\nPerfect background for soft passionate lovemaking.High quality, cinematic, smooth"
+      ],
+      "widgets_values_named": {
+        "text": "Soft erotic ambient music for tender intimate sex.\n\nSlow tempo (around 60–75 BPM), warm and sensual atmosphere.Style:\nSoft deep bass pulse\nGentle warm pads\nDelicate piano or soft electric piano notes\nLight breathy female vocal textures (wordless, very subtle)\nSmooth atmospheric layers\nQuiet intimate reverb\nMood: sensual, emotional, slow, romantic and erotic at the same time.\n\nNo heavy beats, no aggressive sounds, no lyrics.\n\nPerfect background for soft passionate lovemaking.High quality, cinematic, smooth"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 230,
+      "type": "LoadAudio",
+      "pos": [
+        92.74075933814527,
+        5592.173016067395
+      ],
+      "size": [
+        309.06640625,
+        136
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            544
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadAudio",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "ComfyUI_00041.mp3",
+        ""
+      ],
+      "widgets_values_named": {
+        "audio": "ComfyUI_00041.mp3",
+        "upload": ""
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 246,
+      "type": "MiniMaxH3AudioGenerator",
+      "pos": [
+        468.96258906150484,
+        5247.67253925332
+      ],
+      "size": [
+        436.30218998950636,
+        364
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 522
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 523
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 524
+        },
+        {
+          "name": "audio_vae",
+          "type": "VAE",
+          "link": 525
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "widget": {
+            "name": "length"
+          },
+          "link": 530
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            520
+          ]
+        },
+        {
+          "name": "conditioning_prompt",
+          "type": "STRING",
+          "links": [
+            521
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3AudioGenerator",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "Audio Generation",
+        "Single Voice",
+        "Russian",
+        "",
+        "[Speaker 1]\n[angry] опять этот грёбанный снег выпал, хотя зимы еще нет!!!\n\n[Speaker 2]\n[gasping] Слушай, и так быстро похолодало!\n\n[pause=700ms]\n\n[Speaker 1]\n[softly] Скорее бы выпить горячий кофе",
+        1,
+        "Compact",
+        "A quiet pine forest at dawn. Small birds calling from different distances,\na light breeze moving through branches, subtle leaves rustling,\nnatural open-air ambience, no music, no speech.",
+        "",
+        "Female",
+        "",
+        "Natural",
+        "Natural Conversation",
+        "Neutral",
+        50,
+        1,
+        0,
+        "Clone voice identity",
+        "",
+        "Natural Conversation",
+        "Neutral",
+        50,
+        1,
+        0,
+        124,
+        142097261550210,
+        "randomize",
+        8,
+        "euler",
+        "simple",
+        1,
+        false,
+        "match"
+      ],
+      "widgets_values_named": {
+        "generation_mode": "Audio Generation",
+        "expressive_tts_mode": "Single Voice",
+        "speech_language": "Russian",
+        "custom_speech_language": "",
+        "dialogue_script": "[Speaker 1]\n[angry] опять этот грёбанный снег выпал, хотя зимы еще нет!!!\n\n[Speaker 2]\n[gasping] Слушай, и так быстро похолодало!\n\n[pause=700ms]\n\n[Speaker 1]\n[softly] Скорее бы выпить горячий кофе",
+        "speaking_speed_hint": 1,
+        "duration_profile": "Compact",
+        "prompt": "A quiet pine forest at dawn. Small birds calling from different distances,\na light breeze moving through branches, subtle leaves rustling,\nnatural open-air ambience, no music, no speech.",
+        "speech_text": "",
+        "voice_type": "Female",
+        "custom_voice_description": "",
+        "voice_timbre": "Natural",
+        "speaking_style": "Natural Conversation",
+        "emotion": "Neutral",
+        "emotion_intensity": 50,
+        "speech_speed": 1,
+        "speech_pitch": 0,
+        "voice_reference_mode": "Clone voice identity",
+        "cloning_instructions": "",
+        "expressive_default_style": "Natural Conversation",
+        "expressive_default_emotion": "Neutral",
+        "expressive_default_intensity": 50,
+        "expressive_default_speed": 1,
+        "expressive_default_pitch": 0,
+        "length": 124,
+        "seed": 142097261550210,
+        "control_after_generate": "randomize",
+        "steps": 8,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1,
+        "use_references": false,
+        "ref_image_size": "match"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 249,
+      "type": "MiniMaxH3AudioGenerator",
+      "pos": [
+        2368.298909256246,
+        5229.331991040428
+      ],
+      "size": [
+        508.7915101427502,
+        476
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 535
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 536
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 537
+        },
+        {
+          "name": "audio_vae",
+          "type": "VAE",
+          "link": 538
+        },
+        {
+          "label": "speaker_1",
+          "name": "ref_audio_1",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": 543
+        },
+        {
+          "label": "speaker_2",
+          "name": "ref_audio_2",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": 544
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            546
+          ]
+        },
+        {
+          "name": "conditioning_prompt",
+          "type": "STRING",
+          "links": [
+            547
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3AudioGenerator",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "Expressive TTS",
+        "Dual Voice Dialogue",
+        "Auto",
+        "",
+        "[Speaker 1]\nHello! How are you?\n\n[Speaker 2]\nI'm doing well, thank you!",
+        1,
+        "Balanced",
+        "bird singing, forest ambience",
+        "",
+        "Female",
+        "",
+        "Natural",
+        "Natural Conversation",
+        "Neutral",
+        50,
+        1,
+        0,
+        "Clone voice identity",
+        "",
+        "Natural Conversation",
+        "Neutral",
+        50,
+        1,
+        0,
+        124,
+        0,
+        "randomize",
+        20,
+        "res_multistep",
+        "simple",
+        1,
+        false,
+        "match"
+      ],
+      "widgets_values_named": {
+        "generation_mode": "Expressive TTS",
+        "expressive_tts_mode": "Dual Voice Dialogue",
+        "speech_language": "Auto",
+        "custom_speech_language": "",
+        "dialogue_script": "[Speaker 1]\nHello! How are you?\n\n[Speaker 2]\nI'm doing well, thank you!",
+        "speaking_speed_hint": 1,
+        "duration_profile": "Balanced",
+        "prompt": "bird singing, forest ambience",
+        "speech_text": "",
+        "voice_type": "Female",
+        "custom_voice_description": "",
+        "voice_timbre": "Natural",
+        "speaking_style": "Natural Conversation",
+        "emotion": "Neutral",
+        "emotion_intensity": 50,
+        "speech_speed": 1,
+        "speech_pitch": 0,
+        "voice_reference_mode": "Clone voice identity",
+        "cloning_instructions": "",
+        "expressive_default_style": "Natural Conversation",
+        "expressive_default_emotion": "Neutral",
+        "expressive_default_intensity": 50,
+        "expressive_default_speed": 1,
+        "expressive_default_pitch": 0,
+        "length": 124,
+        "seed": 0,
+        "control_after_generate": "randomize",
+        "steps": 20,
+        "sampler_name": "res_multistep",
+        "scheduler": "simple",
+        "denoise": 1,
+        "use_references": false,
+        "ref_image_size": "match"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 253,
+      "type": "PreviewAudio",
+      "pos": [
+        2917.091728757891,
+        5223.94807190612
+      ],
+      "size": [
+        392.51396756990823,
+        154.91130388106103
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 546
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            545
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAudio",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [],
+      "widgets_values_named": {},
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 254,
+      "type": "SaveAudioAdvanced",
+      "pos": [
+        2913.027676389533,
+        5428.661424205341
+      ],
+      "size": [
+        398.4051220006105,
+        160
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 545
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "SaveAudioAdvanced",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "audio/ComfyUI",
+        "mp3",
+        "V0"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "audio/ComfyUI",
+        "format": "mp3",
+        "format.quality": "V0"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 255,
+      "type": "easy showAnything",
+      "pos": [
+        2916.604769327397,
+        5639.507700066071
+      ],
+      "size": [
+        396.3388947665027,
+        313.38174585009256
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 14,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "anything",
+          "shape": 7,
+          "type": "*",
+          "link": 547
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "*",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-easy-use",
+        "ver": "1.4.1",
+        "Node name for S&R": "easy showAnything",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "Soft erotic ambient music for tender intimate sex.\n\nSlow tempo (around 60–75 BPM), warm and sensual atmosphere.Style:\nSoft deep bass pulse\nGentle warm pads\nDelicate piano or soft electric piano notes\nLight breathy female vocal textures (wordless, very subtle)\nSmooth atmospheric layers\nQuiet intimate reverb\nMood: sensual, emotional, slow, romantic and erotic at the same time.\n\nNo heavy beats, no aggressive sounds, no lyrics.\n\nPerfect background for soft passionate lovemaking.High quality, cinematic, smooth"
+      ],
+      "widgets_values_named": {
+        "text": "Soft erotic ambient music for tender intimate sex.\n\nSlow tempo (around 60–75 BPM), warm and sensual atmosphere.Style:\nSoft deep bass pulse\nGentle warm pads\nDelicate piano or soft electric piano notes\nLight breathy female vocal textures (wordless, very subtle)\nSmooth atmospheric layers\nQuiet intimate reverb\nMood: sensual, emotional, slow, romantic and erotic at the same time.\n\nNo heavy beats, no aggressive sounds, no lyrics.\n\nPerfect background for soft passionate lovemaking.High quality, cinematic, smooth"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 257,
+      "type": "MiniMaxH3AudioGenerator",
+      "pos": [
+        1365.7262845202306,
+        5223.148525702996
+      ],
+      "size": [
+        530.0500000000002,
+        600
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 557
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 558
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 559
+        },
+        {
+          "name": "audio_vae",
+          "type": "VAE",
+          "link": 560
+        },
+        {
+          "name": "ref_audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": 563
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            554
+          ]
+        },
+        {
+          "name": "conditioning_prompt",
+          "type": "STRING",
+          "links": [
+            555
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3AudioGenerator",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "Expressive TTS",
+        "Single Voice",
+        "Auto",
+        "",
+        "[Speaker 1]\nHello! How are you?\n\n[Speaker 2]\nI'm doing well, thank you!",
+        1,
+        "Balanced",
+        "bird singing, forest ambience",
+        "[softly] I was thinking about you today.\n[pause=500ms]\n[happy] And I have some wonderful news!\n[laughing] I still can't believe it.",
+        "Female",
+        "",
+        "Natural",
+        "Natural Conversation",
+        "Neutral",
+        50,
+        1,
+        0,
+        "Clone voice identity",
+        "",
+        "Natural Conversation",
+        "Neutral",
+        50,
+        0,
+        0,
+        124,
+        0,
+        "randomize",
+        20,
+        "res_multistep",
+        "simple",
+        1,
+        false,
+        "match"
+      ],
+      "widgets_values_named": {
+        "generation_mode": "Expressive TTS",
+        "expressive_tts_mode": "Single Voice",
+        "speech_language": "Auto",
+        "custom_speech_language": "",
+        "dialogue_script": "[Speaker 1]\nHello! How are you?\n\n[Speaker 2]\nI'm doing well, thank you!",
+        "speaking_speed_hint": 1,
+        "duration_profile": "Balanced",
+        "prompt": "bird singing, forest ambience",
+        "speech_text": "[softly] I was thinking about you today.\n[pause=500ms]\n[happy] And I have some wonderful news!\n[laughing] I still can't believe it.",
+        "voice_type": "Female",
+        "custom_voice_description": "",
+        "voice_timbre": "Natural",
+        "speaking_style": "Natural Conversation",
+        "emotion": "Neutral",
+        "emotion_intensity": 50,
+        "speech_speed": 1,
+        "speech_pitch": 0,
+        "voice_reference_mode": "Clone voice identity",
+        "cloning_instructions": "",
+        "expressive_default_style": "Natural Conversation",
+        "expressive_default_emotion": "Neutral",
+        "expressive_default_intensity": 50,
+        "expressive_default_speed": 0,
+        "expressive_default_pitch": 0,
+        "length": 124,
+        "seed": 0,
+        "control_after_generate": "randomize",
+        "steps": 20,
+        "sampler_name": "res_multistep",
+        "scheduler": "simple",
+        "denoise": 1,
+        "use_references": false,
+        "ref_image_size": "match"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 258,
+      "type": "PreviewAudio",
+      "pos": [
+        1910.945077595053,
+        5222.973699398014
+      ],
+      "size": [
+        392.51396756990823,
+        154.91130388106103
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 554
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            556
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAudio",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [],
+      "widgets_values_named": {},
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 259,
+      "type": "SaveAudioAdvanced",
+      "pos": [
+        1906.881025226695,
+        5427.687051697235
+      ],
+      "size": [
+        398.4051220006105,
+        160
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 556
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "SaveAudioAdvanced",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "audio/ComfyUI",
+        "mp3",
+        "V0"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "audio/ComfyUI",
+        "format": "mp3",
+        "format.quality": "V0"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 260,
+      "type": "easy showAnything",
+      "pos": [
+        1910.4581181645592,
+        5638.533327557965
+      ],
+      "size": [
+        397.09020956740426,
+        337.4238194789432
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "anything",
+          "shape": 7,
+          "type": "*",
+          "link": 555
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "*",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-easy-use",
+        "ver": "1.4.1",
+        "Node name for S&R": "easy showAnything",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "Soft erotic ambient music for tender intimate sex.\n\nSlow tempo (around 60–75 BPM), warm and sensual atmosphere.Style:\nSoft deep bass pulse\nGentle warm pads\nDelicate piano or soft electric piano notes\nLight breathy female vocal textures (wordless, very subtle)\nSmooth atmospheric layers\nQuiet intimate reverb\nMood: sensual, emotional, slow, romantic and erotic at the same time.\n\nNo heavy beats, no aggressive sounds, no lyrics.\n\nPerfect background for soft passionate lovemaking.High quality, cinematic, smooth"
+      ],
+      "widgets_values_named": {
+        "text": "Soft erotic ambient music for tender intimate sex.\n\nSlow tempo (around 60–75 BPM), warm and sensual atmosphere.Style:\nSoft deep bass pulse\nGentle warm pads\nDelicate piano or soft electric piano notes\nLight breathy female vocal textures (wordless, very subtle)\nSmooth atmospheric layers\nQuiet intimate reverb\nMood: sensual, emotional, slow, romantic and erotic at the same time.\n\nNo heavy beats, no aggressive sounds, no lyrics.\n\nPerfect background for soft passionate lovemaking.High quality, cinematic, smooth"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 261,
+      "type": "Fast Groups Bypasser (rgthree)",
+      "pos": [
+        -283.2304490124763,
+        5011.9768097868655
+      ],
+      "size": [
+        697.2955078125,
+        130
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "OPT_CONNECTION",
+          "type": "*",
+          "links": null
+        }
+      ],
+      "properties": {
+        "matchColors": "",
+        "matchTitle": "Mode A — Audio Generation|Mode B — Expressive TTS / Single Voice|Mode C — Expressive TTS / Dual Voice Dialogue",
+        "showNav": true,
+        "showAllGraphs": true,
+        "sort": "position",
+        "customSortAlphabet": "",
+        "toggleRestriction": "default",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 262,
+      "type": "Note",
+      "pos": [
+        -755.8233415977023,
+        5853.14261783659
+      ],
+      "size": [
+        444.3883614507205,
+        114.41637880106282
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "if you use base model than steps must be 20\nwith turbo lora 8 (6, 4 according to lora or turbo model)"
+      ],
+      "widgets_values_named": {
+        "text": "if you use base model than steps must be 20\nwith turbo lora 8 (6, 4 according to lora or turbo model)"
+      },
+      "color": "#432",
+      "bgcolor": "#653"
     }
   ],
   "links": [
     [
-      389,
-      205,
+      520,
+      246,
       0,
       206,
       0,
       "AUDIO"
+    ],
+    [
+      521,
+      246,
+      1,
+      213,
+      0,
+      "STRING"
+    ],
+    [
+      546,
+      249,
+      0,
+      253,
+      0,
+      "AUDIO"
+    ],
+    [
+      547,
+      249,
+      1,
+      255,
+      0,
+      "STRING"
+    ],
+    [
+      554,
+      257,
+      0,
+      258,
+      0,
+      "AUDIO"
+    ],
+    [
+      555,
+      257,
+      1,
+      260,
+      0,
+      "STRING"
     ],
     [
       390,
@@ -434,60 +1235,148 @@
       "AUDIO"
     ],
     [
-      396,
+      545,
+      253,
+      0,
+      254,
+      0,
+      "AUDIO"
+    ],
+    [
+      556,
+      258,
+      0,
+      259,
+      0,
+      "AUDIO"
+    ],
+    [
+      522,
       208,
       0,
-      205,
+      246,
       0,
       "MODEL"
     ],
     [
-      397,
+      523,
       208,
       1,
-      205,
+      246,
       1,
       "CLIP"
     ],
     [
-      398,
+      524,
       208,
       2,
-      205,
+      246,
       2,
       "VAE"
     ],
     [
-      399,
+      525,
       208,
       3,
-      205,
+      246,
       3,
       "VAE"
     ],
     [
-      400,
+      530,
       208,
       4,
-      205,
-      6,
+      246,
+      4,
       "INT"
     ],
     [
-      407,
+      535,
+      208,
+      0,
+      249,
+      0,
+      "MODEL"
+    ],
+    [
+      536,
+      208,
+      1,
+      249,
+      1,
+      "CLIP"
+    ],
+    [
+      537,
+      208,
+      2,
+      249,
+      2,
+      "VAE"
+    ],
+    [
+      538,
+      208,
+      3,
+      249,
+      3,
+      "VAE"
+    ],
+    [
+      543,
       209,
       0,
-      205,
+      249,
       4,
       "AUDIO"
     ],
     [
-      408,
-      210,
+      544,
+      230,
       0,
-      205,
+      249,
       5,
-      "IMAGE"
+      "AUDIO"
+    ],
+    [
+      557,
+      208,
+      0,
+      257,
+      0,
+      "MODEL"
+    ],
+    [
+      558,
+      208,
+      1,
+      257,
+      1,
+      "CLIP"
+    ],
+    [
+      559,
+      208,
+      2,
+      257,
+      2,
+      "VAE"
+    ],
+    [
+      560,
+      208,
+      3,
+      257,
+      3,
+      "VAE"
+    ],
+    [
+      563,
+      209,
+      0,
+      257,
+      4,
+      "AUDIO"
     ]
   ],
   "groups": [
@@ -495,24 +1384,48 @@
       "id": 1,
       "title": "Models",
       "bounding": [
-        -298.7266409231377,
-        5152.912225082561,
-        698.181873668324,
-        789.9999445134936
+        -281.45391365041036,
+        5151.094071007632,
+        702.7273282137785,
+        1070.908979936079
       ],
-      "color": "#3f789e",
+      "color": "#88A",
       "flags": {}
     },
     {
       "id": 7,
-      "title": "sampling and decode",
+      "title": "Mode A — Audio Generation",
       "bounding": [
-        424.8002651077998,
-        5153.324746771123,
-        901.8766500641376,
-        789.5012338639735
+        434.48026510779965,
+        5152.114728307988,
+        902.7030963451293,
+        1070.4929694011635
       ],
-      "color": "#3f789e",
+      "color": "#88A",
+      "flags": {}
+    },
+    {
+      "id": 8,
+      "title": "Mode B — Expressive TTS / Single Voice",
+      "bounding": [
+        1355.7262845202306,
+        5152.973699398014,
+        980.8551644885879,
+        1071.631747638895
+      ],
+      "color": "#88A",
+      "flags": {}
+    },
+    {
+      "id": 9,
+      "title": "Mode C — Expressive TTS / Dual Voice Dialogue",
+      "bounding": [
+        2351.038909256246,
+        5153.94807190612,
+        983.4020327673411,
+        1064.0302535352948
+      ],
+      "color": "#88A",
       "flags": {}
     }
   ],
@@ -522,9 +1435,9 @@
         "id": "77cc61c3-0a78-4c28-8758-a17e6e8d9d1c",
         "version": 1,
         "state": {
-          "lastGroupId": 7,
-          "lastNodeId": 210,
-          "lastLinkId": 408,
+          "lastGroupId": 9,
+          "lastNodeId": 262,
+          "lastLinkId": 563,
           "lastRerouteId": 0
         },
         "revision": 0,
@@ -536,7 +1449,7 @@
             -456.72664092313784,
             5557.494719514234,
             128,
-            148
+            168
           ]
         },
         "outputNode": {
@@ -611,6 +1524,18 @@
               -352.72664092313784,
               5661.494719514234
             ]
+          },
+          {
+            "id": "8e9ae03c-4cc7-4083-80ce-d373bedaa977",
+            "name": "attention",
+            "type": "COMBO",
+            "linkIds": [
+              562
+            ],
+            "pos": [
+              -352.72664092313784,
+              5681.494719514234
+            ]
           }
         ],
         "outputs": [
@@ -619,7 +1544,7 @@
             "name": "MODEL",
             "type": "MODEL",
             "linkIds": [
-              394
+              561
             ],
             "localized_name": "МОДЕЛЬ",
             "pos": [
@@ -702,14 +1627,14 @@
             "inputs": [
               {
                 "label": "a",
-                "localized_name": "values.a",
+                "localized_name": "a",
                 "name": "values.a",
                 "type": "FLOAT,INT,BOOLEAN",
                 "link": 358
               },
               {
                 "label": "b",
-                "localized_name": "values.b",
+                "localized_name": "b",
                 "name": "values.b",
                 "shape": 7,
                 "type": "FLOAT,INT,BOOLEAN",
@@ -750,14 +1675,17 @@
             },
             "widgets_values": [
               "max(5, round(a * 24)) + (5 - (max(5, round(a * 24)) % 17)) % 17"
-            ]
+            ],
+            "widgets_values_named": {
+              "expression": "max(5, round(a * 24)) + (5 - (max(5, round(a * 24)) % 17)) % 17"
+            }
           },
           {
             "id": 199,
             "type": "UNETLoader",
             "pos": [
-              -258.192098335548,
-              5248.840531193563
+              -269.42661994302296,
+              5119.1329038027525
             ],
             "size": [
               629.5893279618331,
@@ -783,7 +1711,7 @@
                 "name": "MODEL",
                 "type": "MODEL",
                 "links": [
-                  394
+                  410
                 ]
               }
             ],
@@ -808,6 +1736,10 @@
               "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
               "default"
             ],
+            "widgets_values_named": {
+              "unet_name": "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+              "weight_dtype": "default"
+            },
             "color": "#223",
             "bgcolor": "#335"
           },
@@ -867,7 +1799,12 @@
               "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
               "minimax",
               "default"
-            ]
+            ],
+            "widgets_values_named": {
+              "clip_name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+              "type": "minimax",
+              "device": "default"
+            }
           },
           {
             "id": 195,
@@ -923,7 +1860,10 @@
             },
             "widgets_values": [
               "minimax_h3_video_vae_fp16.safetensors"
-            ]
+            ],
+            "widgets_values_named": {
+              "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+            }
           },
           {
             "id": 196,
@@ -979,7 +1919,10 @@
             },
             "widgets_values": [
               "minimax_h3_audio_vae_fp32.safetensors"
-            ]
+            ],
+            "widgets_values_named": {
+              "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+            }
           },
           {
             "id": 201,
@@ -1031,27 +1974,72 @@
             },
             "widgets_values": [
               2
-            ]
+            ],
+            "widgets_values_named": {
+              "value": 2
+            }
+          },
+          {
+            "id": 211,
+            "type": "ModelAttentionBackend",
+            "pos": [
+              -267.73183604808077,
+              5296.989162172425
+            ],
+            "size": [
+              626.4611155982388,
+              67.068522803208
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "model",
+                "name": "model",
+                "type": "MODEL",
+                "link": 410
+              },
+              {
+                "localized_name": "attention",
+                "name": "attention",
+                "type": "COMBO",
+                "widget": {
+                  "name": "attention"
+                },
+                "link": 562
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "model",
+                "name": "model",
+                "type": "MODEL",
+                "links": [
+                  561
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.45.2",
+              "Node name for S&R": "ModelAttentionBackend",
+              "ue_properties": {
+                "widget_ue_connectable": {},
+                "input_ue_unconnectable": {},
+                "version": "7.8"
+              }
+            },
+            "widgets_values": [
+              "comfy kitchen attention"
+            ],
+            "widgets_values_named": {
+              "attention": "comfy kitchen attention"
+            }
           }
         ],
         "groups": [],
         "links": [
-          {
-            "id": 358,
-            "origin_id": 201,
-            "origin_slot": 0,
-            "target_id": 202,
-            "target_slot": 0,
-            "type": "FLOAT"
-          },
-          {
-            "id": 394,
-            "origin_id": 199,
-            "origin_slot": 0,
-            "target_id": -20,
-            "target_slot": 0,
-            "type": "MODEL"
-          },
           {
             "id": 391,
             "origin_id": 197,
@@ -1123,30 +2111,63 @@
             "target_id": 201,
             "target_slot": 0,
             "type": "FLOAT"
+          },
+          {
+            "id": 410,
+            "origin_id": 199,
+            "origin_slot": 0,
+            "target_id": 211,
+            "target_slot": 0,
+            "type": "MODEL"
+          },
+          {
+            "id": 561,
+            "origin_id": 211,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "MODEL"
+          },
+          {
+            "id": 562,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 211,
+            "target_slot": 1,
+            "type": "COMBO"
+          },
+          {
+            "id": 358,
+            "origin_id": 201,
+            "origin_slot": 0,
+            "target_id": 202,
+            "target_slot": 0,
+            "type": "FLOAT"
           }
         ],
         "extra": {
-          "ue_links": []
+          "ue_links": [],
+          "links_added_by_ue": []
         }
       }
     ]
   },
   "config": {},
   "extra": {
-    "frontendVersion": "1.48.7",
+    "frontendVersion": "1.58.5",
     "VHS_latentpreview": false,
     "VHS_latentpreviewrate": 0,
     "VHS_MetadataImage": true,
     "VHS_KeepIntermediate": true,
     "ue_links": [],
     "anomalous_hashes": {
-      "208_minimax_h3_fl2va_pruned_int8_convrot.safetensors": {
+      "208_MiniMax-H3-Ref2VA-NEXORA-V2.safetensors": {
         "hash": "",
         "size": 20970379616
       },
-      "208_minimax_h3_video_vae_fp16.safetensors": {
+      "208_minimax_h3_video_vae_int8_convrot.safetensors": {
         "hash": "",
-        "size": 5207808496
+        "size": 2811065184
       },
       "208_minimax_h3_audio_vae_fp32.safetensors": {
         "hash": "",
@@ -1155,10 +2176,10 @@
     },
     "links_added_by_ue": [],
     "ds": {
-      "scale": 0.7513148009015777,
+      "scale": 0.6830134553650705,
       "offset": [
-        251.0037355268301,
-        -4875.954015046576
+        1451.4250183633376,
+        -4955.280978211765
       ]
     }
   },

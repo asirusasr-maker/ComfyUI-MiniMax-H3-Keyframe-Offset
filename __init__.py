@@ -14,7 +14,7 @@ NODE_CLASS_MAPPINGS = {
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "MiniMaxH3KeyframeOffset": "MiniMax H3 Keyframe Offset",
-    "MiniMaxH3AudioGenerator": "MiniMax H3 Audio Generator (AIO)",
+    "MiniMaxH3AudioGenerator": "MiniMax H3 Voice Studio (AIO)",
 }
 
 WEB_DIRECTORY = "./web"

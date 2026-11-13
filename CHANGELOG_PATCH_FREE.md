@@ -15,3 +15,8 @@ Requires a ComfyUI build whose native MiniMax H3 `PackedLayout` accepts arbitrar
 ## Validation
 
 Python syntax compilation and ZIP integrity checks passed. Full node execution was not run here because this environment does not contain the user's ComfyUI runtime, model weights, or GPU.
+
+## 0.4.0 — Dual Voice Dialogue MVP
+- Added dedicated sequential two-reference dialogue node.
+- Added speaker-tag parser, pause insertion, per-utterance reference conditioning, deterministic per-segment seed offsets and JSON segment report.
+- No global monkey patches. Existing 0.3.1 AIO node remains unchanged for workflow compatibility.

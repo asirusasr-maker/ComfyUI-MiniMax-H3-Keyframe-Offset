@@ -1,340 +1,496 @@
-# ComfyUI-MiniMax-H3-Keyframe-Offset
+# ComfyUI MiniMax H3 Keyframe Offset & Voice Studio
 
-[![ComfyUI](https://img.shields.io/badge/ComfyUI-0.3+-green.svg)](https://github.com/comfyanonymous/ComfyUI)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[English](README.md) · **[Русский](README_RU.md)**
 
-Кастомные ноды для **MiniMax H3** в ComfyUI:
+**Целевая версия релиза:** `v2.0.0` (предыдущий публичный релиз: `v1.2.0`)
 
-- **Keyframe Offset** — размещение first/last keyframe на произвольных индексах кадров, а не только в начале/конце клипа
-- **Audio Generator (AIO)** — генерация аудио из текста одной нодой с опциональным **клонированием голоса** и **визуальным референсом** через Ref2VA
+Пользовательские ноды ComfyUI для MiniMax H3:
 
----
+1. **MiniMax H3 Keyframe Offset** — размещение первого и последнего референсных изображений в выбранных кадрах клипа.
+2. **MiniMax H3 Voice Studio (AIO)** — универсальная нода с тремя режимами: Audio Generation, Expressive TTS / Single Voice и Expressive TTS / Dual Voice Dialogue.
 
 ## Содержание
-
-- [Возможности](#возможности)
+- [Что нового в v2.0.0](#что-нового-в-v200)
+- [Скриншоты](#скриншоты)
 - [Установка](#установка)
-- [Зависимости](#зависимости)
-- [Ноды](#ноды)
-  - [MiniMax H3 Keyframe Offset](#1-minimax-h3-keyframe-offset)
-  - [MiniMax H3 Audio Generator (AIO)](#2-minimax-h3-audio-generator-aio)
-- [Примеры workflow](#примеры-workflow)
-- [Технические замечания](#технические-замечания)
+- [Требования](#требования)
+- [Keyframe Offset](#1-minimax-h3-keyframe-offset)
+- [Voice Studio AIO](#2-minimax-h3-voice-studio-aio)
+  - [Общие подключения](#общие-подключения-моделей)
+  - [Audio Generation](#режим-a--audio-generation)
+  - [Expressive TTS — Single Voice](#режим-b--expressive-tts--single-voice)
+  - [Клонирование голоса](#клонирование-голоса-и-аудиореференс)
+  - [Expressive TTS — Dual Voice Dialogue](#режим-c--expressive-tts--dual-voice-dialogue)
+  - [Синтаксис диалога](#синтаксис-диалога)
+  - [Управление языком](#управление-языком)
+  - [Теги эмоций и пауз](#теги-эмоций-подачи-и-пауз)
+  - [Tag Picker](#tag-picker)
+  - [Профили длительности](#adaptive-speech-duration-engine-20)
+- [Рекомендации по промптам](#рекомендации-по-промптам)
 - [Решение проблем](#решение-проблем)
-- [Лицензия](#лицензия)
-- [Благодарности](#благодарности)
+- [История релизов](#история-релизов)
 
----
+## Что нового в v2.0.0
 
-## Возможности
+Переход с v1.2.0 на v2.0.0 включает большое расширение Voice Studio:
 
-| Возможность | Описание |
-|-------------|----------|
-| Произвольные keyframe | First/last кадры можно ставить на любой индекс внутри клипа |
-| Безопасный clamp offset | Offset всегда ограничивается диапазоном `[0, frame_count-1]` по реальной длине |
-| Внешний `length` | Если длину задаёт другая нода, clamp всё равно идёт по вычисленному `frame_count` |
-| Нативное размещение кадров | Используется штатный `minimax_keyframes`; глобальные классы ComfyUI не изменяются |
-| Аудио «всё в одном» | Одна нода: промпт → шум → сэмплинг → Audio VAE decode → ComfyUI `AUDIO` |
-| Нативный путь H3 | `comfy.sample.sample_custom`, `cfg=1.0` (guidance-distilled) |
-| **Клонирование голоса** | Подайте `ref_audio` — модель копирует тембр/стиль и генерирует новое аудио |
-| **Визуальное аудио-рассуждение** | Подайте `ref_image` — модель интерпретирует сцену и адаптирует звук (например, эхо в горах vs. эхо в комнате) |
+- Объединение генерации аудио и выразительной речи в **MiniMax H3 Voice Studio (AIO)**.
+- Три сценария: `Audio Generation`, `Expressive TTS → Single Voice`, `Expressive TTS → Dual Voice Dialogue`.
+- Один аудиореференс для Single Voice и два независимых референса для диалога: `speaker_1` и `speaker_2`.
+- Последовательная генерация реплик с референсом соответствующего спикера и сборка фрагментов/пауз в одну аудиодорожку.
+- Встроенные теги эмоций и манеры речи, синтаксис пауз `[pause=...]`.
+- Выбор общего языка, Custom language и постоянные переопределения языка `[lang=...]` для отдельных реплик.
+- Кнопки Tag Picker для полей речи и диалога.
+- Adaptive Speech Duration Engine 2.0 с профилями `Compact`, `Balanced`, `Expressive`.
+- Расширенный отчёт сегментов: спикер, текст, язык, оценка длительности и выравнивание, sample rate и число сэмплов.
+- Сохранена Keyframe Offset с нативным conditioning ComfyUI `minimax_keyframes`, без глобального monkey patch `PackedLayout`.
 
----
+## Скриншоты
+
+Поместите три новых изображения в `docs/images/`, сохранив точные имена файлов:
+
+### 1. Audio Generation
+![Voice Studio — Audio Generation](docs/images/MiniMax%20H3%20Voice%20Studio%20%28audio_generation%29.png)
+
+### 2. Expressive TTS — Single Voice
+![Voice Studio — Single Voice](docs/images/MiniMax%20H3%20Voice%20Studio%20%28TTS_single_voice%29.png)
+
+### 3. Expressive TTS — Dual Voice Dialogue
+![Voice Studio — Dual Voice](docs/images/MiniMax%20H3%20Voice%20Studio%20%28TTS_dual_voice%29.png)
+
+### 4. Keyframe Offset
+![MiniMax H3 Keyframe Offset](docs/images/keyframe_offset.png)
+
+Сохраните существующий скриншот Keyframe Offset в `docs/images/`. Если его имя отличается от `keyframe_offset.png`, измените путь выше на фактическое имя файла либо переименуйте изображение.
 
 ## Установка
 
-### Способ 1: Git clone (рекомендуется)
+### Через Git
+
+Выполните команду из папки `ComfyUI/custom_nodes/`:
 
 ```bash
-cd ComfyUI/custom_nodes
 git clone https://github.com/asirusasr-maker/ComfyUI-MiniMax-H3-Keyframe-Offset.git
 ```
 
-Перезапустите ComfyUI (или **Reload Custom Nodes**).
+После установки перезапустите ComfyUI.
 
-### Способ 2: Вручную
+### Через ZIP
 
-1. Скачайте репозиторий ZIP
-2. Распакуйте в `ComfyUI/custom_nodes/ComfyUI-MiniMax-H3-Keyframe-Offset`
-3. Перезапустите ComfyUI
+1. На GitHub выберите **Code → Download ZIP**.
+2. Распакуйте репозиторий в `ComfyUI/custom_nodes/`.
+3. Проверьте, что папка называется `ComfyUI-MiniMax-H3-Keyframe-Offset`.
+4. Перезапустите ComfyUI.
 
-### Portable ComfyUI (Windows)
-
-Положите папку сюда:
-
-```
-ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-MiniMax-H3-Keyframe-Offset
-```
-
----
-
-## Зависимости
-
-Пакет использует **только API ядра ComfyUI** (`torch`, `comfy.*`, `node_helpers`).
-Отдельные pip-пакеты **не требуются** (кроме уже установленного MiniMax H3 в ComfyUI).
-
-`requirements.txt` намеренно без сторонних зависимостей:
+Путь для Windows Portable:
 
 ```text
-# No external dependencies beyond ComfyUI core (torch, comfy)
+ComfyUI_windows_portable/ComfyUI/custom_nodes/ComfyUI-MiniMax-H3-Keyframe-Offset/
 ```
 
-Нужны официальные веса MiniMax H3: diffusion model, CLIP/text encoder, video VAE, audio VAE.
+Для обновления остановите ComfyUI, сохраните workflow и локальные изменения, замените старую папку новой версией и запустите ComfyUI. Если старый экземпляр ноды не показывает новые элементы, удалите его из графа и добавьте ноду заново.
 
----
+## Требования
 
-## Ноды
+- ComfyUI с поддержкой MiniMax H3.
+- Диффузионная модель MiniMax H3 и соответствующий CLIP/text encoder.
+- Video VAE и Audio VAE MiniMax H3.
+- Для Keyframe Offset нужна версия ComfyUI с нативной поддержкой `resolved_frame_index` в `minimax_keyframes`.
 
-Скриншоты: [`docs/images/`](docs/images/).
+Пакет использует API ComfyUI/PyTorch. Глобальные патчи ядра ComfyUI не устанавливаются.
 
----
+## 1. MiniMax H3 Keyframe Offset
 
-### 1. MiniMax H3 Keyframe Offset
+Эта нода добавляет первое и последнее референсные изображения в conditioning MiniMax H3 на заданных позициях видеоклипа.
 
-<img src="docs/images/keyframe_offset.png" width="420" alt="MiniMax H3 Keyframe Offset">
+| Вход | Назначение |
+|---|---|
+| `clip` | Текстовый энкодер MiniMax H3. |
+| `vae` | Video VAE для кодирования референсных кадров. |
+| `prompt` | Описание видео. |
+| `width`, `height` | Размер выходного изображения/кадра. |
+| `length` | Запрошенная длина в кадрах при 24 fps; применяется выравнивание H3. |
+| `first_frame_offset` | Позиция первого изображения; `0` — первый кадр. |
+| `last_frame_offset` | Позиция последнего изображения; `-1` — последний кадр. |
+| `first_frame`, `last_frame` | Необязательные изображения-референсы. |
 
-Нода conditioning для MiniMax H3 image-to-video с **перемещаемыми** first/last keyframe.
+Выходы: `positive` (CONDITIONING с нативными данными ключевых кадров) и `latent` (AV latent для последующего H3 sampler).
 
-В стоковых workflow обычно:
+Смещения ограничиваются допустимым диапазоном выровненного количества кадров. Информация об изменении выводится в консоль ComfyUI. Длина H3 подчиняется временной сетке `17k + 5` при 24 fps, поэтому запрошенное значение может быть округлено вверх.
 
-- first keyframe → кадр `0`
-- last keyframe → последний кадр
-
-Эта нода позволяет поставить каждый keyframe на **любой индекс** внутри клипа. Модель свободно генерирует движение до, между и после вставленных кадров.
-
-#### Входы
-
-| Имя | Тип | Описание |
-|-----|-----|----------|
-| `clip` | CLIP | MiniMax H3 CLIP / text encoder |
-| `vae` | VAE | MiniMax H3 video VAE |
-| `prompt` | STRING | Текстовый промпт (dynamic prompts) |
-| `width` | INT | Ширина (по умолчанию `1344`, шаг `32`) |
-| `height` | INT | Высота (по умолчанию `768`, шаг `32`) |
-| `length` | INT | Число кадров при 24 fps (выравнивается в сетку H3 `17k+5`; по умолчанию `124` ≈ 5 с) |
-| `first_frame_offset` | INT | Индекс для `first_frame` (`0` = начало). Clamp в `[0, frame_count-1]` |
-| `last_frame_offset` | INT | Индекс для `last_frame` (`-1` = последний кадр). Clamp в `[0, frame_count-1]` |
-| `first_frame` | IMAGE (опц.) | Первый keyframe |
-| `last_frame` | IMAGE (опц.) | Последний keyframe |
-
-#### Выходы
-
-| Имя | Тип | Описание |
-|-----|-----|----------|
-| `positive` | CONDITIONING | Conditioning со штатным `minimax_keyframes` |
-| `latent` | LATENT | Пустой AV NestedTensor latent для семплинга |
-
-#### Поведение
-
-1. `length` выравнивается через `align_frame_count` (временная сетка H3).
-2. `last_frame_offset = -1` → `frame_count - 1`.
-3. Оба offset обрезаются в `[0, frame_count - 1]`.
-4. Если значение изменилось, в консоль пишется сообщение:
-
-```text
-[MiniMax H3 Keyframe Offset] Offsets clamped to [0, 123]: first_frame_offset 200->123, last_frame_offset 150->123
-```
-
-5. First frame: resize с `crop="disabled"`. Last frame: `crop="center"`.
-6. Индексы кадров передаются через штатное поле `minimax_keyframes`. Пакет не изменяет `PackedLayout` и другие глобальные объекты ComfyUI.
-
-#### Типичный граф
+Пример графа:
 
 ```text
 Load Image (first) ──┐
-                     ├─► MiniMax H3 Keyframe Offset ─► KSampler / SamplerCustom ─► Decode
-Load Image (last)  ──┘         ▲
-                               │
-                     CLIP + VAE + prompt + length
+                     ├──> MiniMax H3 Keyframe Offset ── positive ──> H3 Sampler
+Load Image (last)  ──┘                  │
+CLIP / Video VAE / prompt / size / length
+                                        └── latent ────────────────> H3 Sampler
 ```
 
----
+## 2. MiniMax H3 Voice Studio (AIO)
 
-### 2. MiniMax H3 Audio Generator (AIO)
+Сценарий выбирается через `generation_mode`. У `Expressive TTS` есть дополнительный переключатель `expressive_tts_mode`.
 
-<img src="docs/images/audio_generator.png" width="420" alt="MiniMax H3 Audio Generator AIO">
+### Общие подключения моделей
 
-Нода **текст → аудио** «всё в одном» для MiniMax H3. Отдельные conditioning / sampler / decode не нужны.
+| Сокет | Что подключить |
+|---|---|
+| `model` | Диффузионная модель MiniMax H3. |
+| `clip` | Текстовый энкодер MiniMax H3. |
+| `vae` | Video VAE MiniMax H3. |
+| `audio_vae` | Audio VAE MiniMax H3. |
+| Выход `audio` | Нода ComfyUI для прослушивания/сохранения аудио. |
 
-Теперь с **Ref2VA-референсами** — переключите `use_references`, чтобы открыть входы `ref_image` и `ref_audio` для расширенного контроля.
+Не меняйте местами `vae` и `audio_vae`.
 
-#### Входы
+### Режим A — Audio Generation
 
-| Имя | Тип | Описание |
-|-----|-----|----------|
-| `model` | MODEL | MiniMax H3 diffusion model |
-| `clip` | CLIP | MiniMax H3 CLIP |
-| `vae` | VAE | MiniMax H3 **video** VAE (нужен для joint AV latent) |
-| `audio_vae` | VAE | MiniMax H3 **audio** VAE (только decode) |
-| `prompt` | STRING | Описание звука. С включёнными референсами обращайтесь к ним как `<Picture 1>` и `<Audio 1>` |
-| `length` | INT | Длительность в кадрах при 24 fps (по умолчанию `124` ≈ 5 с) |
-| `seed` | INT | Seed (`управление после генерации` / randomize) |
-| `steps` | INT | Число шагов (по умолчанию `20`) |
-| `sampler_name` | COMBO | Семплер (по умолчанию `res_multistep`) |
-| `scheduler` | COMBO | Планировщик (по умолчанию `simple`) |
-| `denoise` | FLOAT | Сила денойза `0.0–1.0` (по умолчанию `1.0`) |
-| `use_references` | BOOLEAN | **Включить Ref2VA** — появляются входы `ref_image` и `ref_audio` |
-| `ref_image_size` | COMBO | `match` (быстрее, масштаб под canvas) или `max` (2048 по короткой стороне, лучше identity) |
-| `ref_image` | IMAGE (опц.) | Визуальный якорь → `<Picture 1>`. Помогает модели «рассуждать» об акустической среде |
-| `ref_audio` | AUDIO (опц.) | Аудио-референс → `<Audio 1>`. Для клонирования голоса или переноса стиля |
-
-#### Выходы
-
-| Имя | Тип | Описание |
-|-----|-----|----------|
-| `audio` | AUDIO | Dict ComfyUI: `{"waveform": [B,C,L], "sample_rate": 32000}` |
-
-#### Режимы референсов
-
-Когда `use_references` **включён**, нода строит нативные `minimax_refs` (тот же путь, что и у MiniMax H3 Reference to Video).
-
-**Клонирование голоса** (`ref_audio`)
-- Подключите короткую запись голоса к `ref_audio`.
-- Промпт: `A narrator reading a poem, calm and clear`
-- Модель копирует тембр диктора и генерирует новую речь этим голосом.
-- ⚠️ Нативный H3 предпочитает `ref_image` вместе с `ref_audio`. Без визуального якоря качество клона может упасть.
-
-**Визуальное аудио-рассуждение** (`ref_image`)
-- Подключите фото к `ref_image`.
-- Промпт: `echo reverberating through the valley`
-- Модель читает сцену (горы, узкая комната, собор, лес…) и адаптирует реверберацию, атмосферу и пространственный характер звука.
-- Пример: один и тот же промпт `echo` + фото **гор** → широкое, далёкое эхо; + фото **маленькой комнаты** → короткое, «slap-back» эхо.
-
-**Комбинированный** (`ref_image` + `ref_audio`)
-- Используйте оба референса для максимального контроля: визуальный контекст + клонированный голос / стиль.
-- Промпт: `<Picture 1> A mysterious voice whispers ancient words, <Audio 1>`
-
-#### Внутренний пайплайн
-
-1. Пустой AV NestedTensor latent (video placeholder `320×320` + audio latent 40 Hz).
-2. Если `use_references` включён, кодируются `ref_image` (через video VAE) и/или `ref_audio` (через audio VAE) в нативные ref-блоки.
-3. Токенизация промпта (с `minimax_ref_items` при активных референсах) и encode conditioning.
-4. Sampler + sigmas по scheduler/steps.
-5. `prepare_noise` + `comfy.sample.sample_custom`.
-6. Аудио-ветка NestedTensor → `audio_vae.decode`.
-7. Нормализация в ComfyUI `AUDIO`, **32 kHz stereo**.
-
-#### CFG
-
-Нативный MiniMax H3 — **guidance-distilled**. CFG **всегда `1.0`**, параметр в UI скрыт.
-
-#### Типичный граф
-
-**Базовый (только текст):**
-```text
-UNETLoader ──► model ─┐
-CLIPLoader ─► clip  ─┤
-VAELoader  ─► vae   ─┼─► MiniMax H3 Audio Generator (AIO) ─► Preview Audio / Save Audio
-VAELoader  ─► audio_vae ─┘
-```
-
-**С референсами:**
-```text
-Load Image  ──► ref_image ──┐
-Load Audio  ──► ref_audio ──┼─► MiniMax H3 Audio Generator (AIO) ─► Preview Audio
-                             │
-UNETLoader ──► model ────────┤
-CLIPLoader ──► clip ─────────┤
-VAELoader  ──► vae ──────────┤
-VAELoader  ──► audio_vae ────┘
-```
-
----
-
-## Примеры workflow
-
-### Клонирование голоса
+Выберите:
 
 ```text
-prompt:  Диктор читает новости, профессиональный тон
-ref_audio:  5-секундная запись целевого голоса
-ref_image:  (опционально, но рекомендуется) портрет диктора или фон студии
+generation_mode = Audio Generation
 ```
 
-### Звуковой дизайн с учётом окружения
+Режим предназначен для звуковых эффектов, атмосфер, окружающих звуков и других задач генерации аудио по промпту.
+
+| Параметр | Назначение |
+|---|---|
+| Поле Prompt | Опишите источники звука, действия, расстояние, атмосферу и акустическое пространство. |
+| `length` | Ручная длительность в кадрах H3 при 24 fps; значение выравнивается по сетке H3. |
+| `seed` | Seed генерации. |
+| `control after generate` | Поведение seed после генерации (например, fixed/randomize). |
+| `steps` | Количество шагов сэмплирования. |
+| `sampler_name` | Sampler. |
+| `scheduler` | Scheduler. |
+| `denoise` | Сила денойзинга; для полной генерации обычно `1.0`. |
+| `use_references` | Включает дополнительные входы Ref2VA. |
+| `ref_image` | Необязательный визуальный референс, обозначаемый `<Picture 1>`. |
+| `ref_audio` | Необязательный аудиореференс, обозначаемый `<Audio 1>`. |
+
+Пример промпта:
 
 ```text
-prompt:  Сильный дождь по жестяной крыше, далёкий раскат грома
-ref_image:  Фото интерьера старой дачи
-ref_audio:  (опционально) короткая запись дождя для соответствия текстуре
+A quiet pine forest at dawn. Small birds calling from different distances,
+a light breeze moving through branches, subtle leaves rustling,
+natural open-air ambience, no music, no speech.
 ```
 
----
+Если используются референсы, указывайте точные токены:
 
-## Технические замечания
+```text
+<Picture 1> Create a realistic soundscape matching this location:
+soft wind, distant birds, and spacious outdoor ambience.
+```
 
-### Сетка кадров
+```text
+Use the vocal timbre and acoustic character of <Audio 1>
+for a calm narrator reading a short passage.
+```
 
-Длина видео MiniMax H3 подчиняется правилу `17k + 5`. Запрошенный `length` округляется вверх через `align_frame_count`.
+`<Picture 1>` и `<Audio 1>` — маркеры референсов. Сохраняйте угловые скобки и точное написание.
+
+### Режим B — Expressive TTS / Single Voice
+
+Выберите:
+
+```text
+generation_mode = Expressive TTS
+expressive_tts_mode = Single Voice
+```
+
+В `speech_text` вводится текст, который должен произнести один голос.
+
+| Параметр | Назначение |
+|---|---|
+| `speech_language` | Auto, один из доступных языков или Custom. |
+| `custom_speech_language` | Появляется при Custom; укажите язык, например `Uzbek`. |
+| `ref_audio` | Необязательный аудиореференс для идентичности/клонирования голоса. |
+| `voice_type` | Общее описание типа голоса, если референс не подключён. |
+| `custom_voice_description` | Дополнительное текстовое описание голоса. |
+| `voice_timbre` | Общее описание тембра. Подключённый референс должен быть главным источником идентичности. |
+| `expressive_default_style` | Стиль речи по умолчанию. |
+| `expressive_default_emotion` | Эмоция по умолчанию, если локальный тег её не переопределяет. |
+| `expressive_default_intensity` | Интенсивность эмоции. |
+| `expressive_default_speed` | Подсказка по скорости. |
+| `expressive_default_pitch` | Подсказка по высоте голоса. |
+| `seed`, `steps`, `sampler_name`, `scheduler`, `denoise` | Параметры сэмплирования. |
+
+В Expressive TTS ручной параметр `length` скрыт: длительность оценивается автоматически для каждой реплики.
+
+Пример `speech_text`:
+
+```text
+[softly] I was thinking about you today.
+[pause=500ms]
+[happy] And I have some wonderful news!
+[laughing] I still can't believe it.
+```
+
+Пишите произносимые слова вне квадратных скобок. В скобках находятся инструкции/теги, а не сам текст речи.
+
+### Клонирование голоса и аудиореференс
+
+1. Подготовьте чистую запись нужного голоса.
+2. Подключите её к `ref_audio`.
+3. Введите новый текст в `speech_text`.
+4. Выберите язык речи.
+5. Добавьте теги эмоций/подачи только там, где это необходимо.
+6. Запустите генерацию и прослушайте результат.
+
+Советы:
+- Желательно использовать запись одного человека, без фоновой музыки и сильного шума.
+- Короткий нейтральный образец — хорошая отправная точка.
+- Референс помогает передать характеристики голоса, но не гарантирует идеальное клонирование, точное произношение или дословное копирование.
+- В аудиореференсе есть не только тембр, но и речевой контекст. По возможности избегайте музыки, наложения голосов и отвлекающего фонового содержимого.
+
+### Режим C — Expressive TTS / Dual Voice Dialogue
+
+Выберите:
+
+```text
+generation_mode = Expressive TTS
+expressive_tts_mode = Dual Voice Dialogue
+```
+
+Подключите два отдельных голосовых референса:
+
+| Сокет | Референс |
+|---|---|
+| `speaker_1` | Голос участника, обозначенного `[Speaker 1]`. |
+| `speaker_2` | Голос участника, обозначенного `[Speaker 2]`. |
+
+Нода последовательно генерирует реплики с соответствующим референсом спикера, а затем объединяет речевые фрагменты и паузы в одну аудиодорожку. Не перепутайте подключения.
+
+Базовый диалог:
+
+```text
+[Speaker 1]
+Hello! How are you?
+
+[Speaker 2]
+I'm doing well, thank you!
+```
+
+Диалог с эмоциями:
+
+```text
+[Speaker 1]
+[angry] Why did you leave without telling me?
+
+[Speaker 2]
+[softly] I didn't want to hurt you.
+
+[pause=700ms]
+
+[Speaker 1]
+[whispering] Can we talk about it?
+```
+
+Правила:
+- Пишите `[Speaker 1]` или `[Speaker 2]` точно в таком виде, на отдельной строке.
+- Следующий текст принадлежит этому спикеру, пока не появится другая метка.
+- Теги эмоций/подачи ставьте в квадратных скобках перед словами.
+- Пауза — отдельный тег, она не переключает спикера.
+- Для более предсказуемой длительности не делайте реплики чрезмерно длинными.
+
+## Синтаксис диалога
+
+### Метки спикеров
+
+```text
+[Speaker 1]
+Текст первого участника.
+
+[Speaker 2]
+Текст второго участника.
+```
+
+Не заменяйте метки на `Speaker 1:` или `(Speaker 1)`.
+
+### Теги эмоций и подачи
 
 Примеры:
 
-| Запрошено | Выровненный `frame_count` | ~Длительность @ 24 fps |
-|-----------|---------------------------|------------------------|
-| 124 | 124 | ~5.2 с |
-| 200 | 209 | ~8.7 с |
-| 362 | 362 | ~15.1 с |
-
-Частота audio latent — **40 Hz** (800 сэмплов на latent-кадр при 32 kHz).
-
-### Работа с keyframe без патчей
-
-Эта версия не патчит `PackedLayout`, не подменяет методы классов и не изменяет глобальное состояние ComfyUI. Индекс каждого кадра передаётся через штатное поле conditioning `minimax_keyframes`. Требуется актуальная версия ComfyUI, в которой MiniMax H3 поддерживает произвольные индексы keyframe (это поддерживается текущей upstream-реализацией).
-
-### Формат аудио
-
-Всегда:
-
-```python
-{
-  "waveform": FloatTensor[B, C, L],  # обычно B=1, C=2 (стерео)
-  "sample_rate": 32000
-}
+```text
+[happy] I have been waiting for this!
+[sad] I miss those days.
+[angry] Please stop doing that!
+[whispering] Don't wake anyone.
+[softly] Everything will be okay.
+[shouting] Get out of here!
+[laughing] That was hilarious!
+[crying] I can't believe it.
+[sighing] It has been a long day.
+[gasping] What happened?!
 ```
 
-Совместимо с нодами **Preview Audio** / **Save Audio**.
+Несколько направлений можно объединить, если они поддерживаются:
 
-### Размер референсного изображения
+```text
+[whispering, sad] I thought you would stay.
+```
 
-| Режим | Поведение | Когда использовать |
-|-------|-----------|------------------|
-| `match` | Масштабируется относительно canvas генерации (внутри 320×320) | Быстрые превью, приблизительное стилевое соответствие |
-| `max` | Масштабируется до 2048 px по короткой стороне, затем crop до кратного canvas | Лучшее сохранение identity, больше VRAM |
+Теги являются естественно-языковыми подсказками модели, а не гарантированными акустическими командами. Не объединяйте много противоречащих друг другу инструкций.
 
----
+### Теги пауз
+
+Используйте точный синтаксис с `=`:
+
+```text
+[pause=300ms]
+[pause=700ms]
+[pause=1s]
+[pause=1.2s]
+[pause=2.5s]
+```
+
+`ms` — миллисекунды, `s` — секунды. Пауза вставляется в итоговое аудио и не произносится. Не используйте неоднозначные формы вроде `[pause 1 second]`.
+
+## Управление языком
+
+`speech_language` задаёт язык по умолчанию для Expressive TTS. Варианты: `Auto`, `English`, `Russian`, `Chinese`, `Japanese`, `Korean`, `Spanish`, `French`, `German`, `Portuguese`, `Italian`, `Custom`. Для Custom укажите язык в `custom_speech_language`, например `Uzbek`.
+
+Чтобы сменить язык внутри Dual Voice Dialogue, используйте:
+
+```text
+[lang=English]
+```
+
+или:
+
+```text
+[language=Russian]
+```
+
+Переопределение действует на последующие реплики, пока не будет задан другой языковой тег.
+
+Пример: русский язык по умолчанию, одна английская реплика, затем снова русский:
+
+```text
+[Speaker 1]
+[lang=Russian]
+Привет! Как прошёл твой день?
+
+[Speaker 2]
+[lang=English]
+It was great, thanks for asking.
+
+[Speaker 1]
+[lang=Russian]
+Рад это слышать!
+```
+
+Для ясности ставьте языковой тег сразу после метки спикера. Языковые инструкции направляют модель, но не гарантируют идеальное произношение и полное отсутствие смешения языков.
+
+## Теги эмоций, подачи и пауз
+
+Распространённые направления: `[happy]`, `[sad]`, `[angry]`, `[whispering]`, `[softly]`, `[shouting]`, `[laughing]`, `[crying]`, `[sighing]`, `[gasping]`.
+
+Правильное размещение:
+
+```text
+[angry] I told you not to touch that!
+```
+
+Изменение подачи внутри одной реплики:
+
+```text
+[Speaker 1]
+[angry] I can't believe this happened.
+[pause=400ms]
+[softly] I just need a moment.
+```
+
+Не помещайте произносимые слова внутрь скобок. В скобках пишется инструкция, а слова — после закрывающей скобки.
+
+## Tag Picker
+
+В ноде есть:
+- `mm_tag_picker_speech` под полем `speech_text` в Single Voice.
+- `mm_tag_picker_dialogue` под полем `dialogue_script` в Dual Voice Dialogue.
+
+Нажмите кнопку, выберите тег/категорию — тег вставится в сохранённую позицию курсора. Выделенный текст может быть заменён. Для пользовательской паузы укажите, например, `pause=2.5s`. Чтобы контролировать место вставки, сначала активируйте текстовое поле и установите курсор. Теги также можно вводить вручную.
+
+## Adaptive Speech Duration Engine 2.0
+
+Expressive TTS отдельно рассчитывает длительность каждой реплики. Ручной `length` в этих режимах не используется.
+
+| Профиль | Поведение | Когда использовать |
+|---|---|---|
+| `Compact` | Более короткий бюджет и меньший дополнительный запас. | Короткие реплики; попробуйте, если модель добавляет лишние слова в конце. |
+| `Balanced` | Средний расчёт длительности. | Универсальная отправная точка для разговора. |
+| `Expressive` | Больше времени для медленной или эмоционально растянутой речи. | Драматичные, медленные или очень выразительные реплики. |
+
+По умолчанию используется `Balanced`. Если в конце появляются лишние слова, попробуйте `Compact`. Если последнее слово обрезается или речь слишком торопливая, попробуйте `Balanced`/`Expressive` либо немного уменьшите `speaking_speed_hint`.
+
+`speaking_speed_hint` влияет на расчёт и служит подсказкой по темпу; это не точное управление скоростью воспроизведения. Начните с `1.00` и меняйте постепенно.
+
+Расчёт учитывает приблизительное количество слогов, пунктуацию, скорость и профиль, после чего количество кадров выравнивается по временной сетке H3.
+
+**Ограничения:** длительность — это бюджет latent-генерации, а не гарантированная граница остановки. H3 всё ещё может добавить, пропустить, повторить или изменить слова. Compact может уменьшить нежелательное продолжение, но иногда обрезает конец фразы. Отчёт сегментов — диагностические данные, а не доказательство точного совпадения с текстом.
+
+Рекомендуемые стартовые значения:
+
+```text
+speaking_speed_hint = 1.00
+duration_profile = Balanced
+steps = 20
+denoise = 1.00
+```
+
+При тестировании меняйте по одному параметру за раз.
+
+## Рекомендации по промптам
+
+- В поле речи/диалога пишите только слова, которые должны прозвучать.
+- Используйте обычную пунктуацию и разумную длину реплик.
+- Инструкции подачи размещайте в квадратных скобках перед фразой.
+- Метки спикеров пишите точно и на отдельных строках.
+- Установите общий язык и используйте `[lang=...]` только там, где язык меняется.
+- Используйте чистые референсы и подключайте каждого участника к соответствующему входу.
+- Не перегружайте одну фразу противоречивыми эмоциями.
+- Если модель продолжает фразу лишними словами, попробуйте `Compact` и сократите реплику. Если обрезает окончание — выберите менее компактный профиль.
 
 ## Решение проблем
 
-| Проблема | Причина | Решение |
-|----------|---------|---------|
-| `sample() got an unexpected keyword argument 'device'` | Старая версия вызывала `comfy.sample.sample` с лишними kwargs | Обновить AIO-ноду (`sample_custom`) |
-| `too many indices for tensor of dimension 3` на Save/Preview Audio | Вернули сырой тензор вместо AUDIO dict | Обновить AIO (`_to_audio_dict`) |
-| Seed не меняется при randomize | Старый экземпляр ноды после смены INPUT_TYPES | Удалить ноду с графа, перезапустить ComfyUI, добавить заново |
-| Offset игнорируется / ошибка ядра | Патч не применился | В консоли должно быть: `MiniMax H3 Keyframe Offset: Patch applied successfully` |
-| Offset больше длины клипа | Ожидаемо | Значение clamp’ится; смотрите лог в консоли |
-| Пустое / тихое аудио | Не тот VAE на `audio_vae` или denoise `0` | Подключите **Audio** VAE MiniMax; denoise `1.0` |
-| Слабое клонирование / искажённый тембр | `ref_audio` без `ref_image` | Подключите `ref_image` (хотя бы нейтральный портрет); нативный H3 предпочитает визуальный якорь |
-| Референсное изображение игнорируется | `use_references` выключен | Включите тумблер; входы появляются только при активации |
-| Ошибки JSON у ComfyUI-Manager | Сеть / кэш Manager | К этому паку не относится |
+| Проблема | Что проверить |
+|---|---|
+| Нода не появляется | Проверьте консоль запуска, путь к папке, ошибки импорта Python; перезапустите ComfyUI. |
+| Аудио пустое/некорректное | Проверьте `audio_vae` и `denoise`. |
+| Неправильный голос в диалоге | Проверьте подключения `speaker_1` и `speaker_2`. |
+| Голоса похожи | Используйте более чистые и различающиеся референсы; разделение идентичности зависит от checkpoint. |
+| Лишние слова | Попробуйте `Compact`, сократите реплику, упростите теги. Длительность не является жёсткой командой остановки. |
+| Обрезается последнее слово | Попробуйте `Balanced`/`Expressive` или немного уменьшите `speaking_speed_hint`. |
+| Неправильный язык | Явно задайте `speech_language` и используйте `[lang=...]`. |
+| Эмоция не выражена | Используйте один ясный тег непосредственно перед фразой. Теги — подсказки. |
+| Пауза произносится | Проверьте синтаксис, например `[pause=700ms]`. |
+| Tag Picker вставляет не туда | Сначала активируйте поле и установите курсор. |
+| Новые параметры не видны | Перезапустите ComfyUI и добавьте экземпляр ноды заново. |
+| Ошибка keyframe offset | Обновите ComfyUI до версии с нативной поддержкой `resolved_frame_index`; пакет не патчит ядро. |
 
----
+При сообщении об ошибке приложите версию ComfyUI, полный traceback, выбранный режим, prompt/script и segment report, если он есть.
 
-## Лицензия
+## История релизов
 
-**Apache License, Version 2.0**. Подробности в [LICENSE](LICENSE).
+### v2.0.0
+- Voice Studio AIO расширена тремя режимами: Audio Generation, Expressive TTS Single Voice и Expressive TTS Dual Voice Dialogue.
+- Добавлены клонирование голоса/аудиореференс, отдельные референсы спикеров и последовательная сборка диалога.
+- Добавлены теги эмоций/подачи и пауз.
+- Добавлен выбор языка и переопределения языка для отдельных реплик.
+- Добавлен Tag Picker.
+- Добавлен Adaptive Speech Duration Engine 2.0 с профилями Compact/Balanced/Expressive.
+- Расширена диагностика сегментов.
+- Сохранено нативное Keyframe Offset conditioning без monkey patch.
 
-```
-Copyright 2026 asirusasr-maker / ComfyUI-MiniMax-H3-Keyframe-Offset contributors
-```
+Предыдущий релиз: `v1.2.0`. Историю более ранних версий см. в Git tags/releases.
 
----
+## Лицензия и благодарности
 
-## Благодарности
+Apache License 2.0 — см. [`LICENSE`](LICENSE).
 
-- Архитектура MiniMax H3 и официальная интеграция в ComfyUI: [Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI), MiniMax
-- Автор пака: [asirusasr-maker](https://github.com/asirusasr-maker)
+- ComfyUI и интеграция MiniMax H3.
+- MiniMax за модель H3.
+- Разработчик и сопровождающий: [asirusasr-maker](https://github.com/asirusasr-maker).
 
----
-
-*Репозиторий: [ComfyUI-MiniMax-H3-Keyframe-Offset](https://github.com/asirusasr-maker/ComfyUI-MiniMax-H3-Keyframe-Offset)*
+Репозиторий: https://github.com/asirusasr-maker/ComfyUI-MiniMax-H3-Keyframe-Offset
