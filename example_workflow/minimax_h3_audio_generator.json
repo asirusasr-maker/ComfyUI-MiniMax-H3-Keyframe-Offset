@@ -1,8 +1,8 @@
 {
   "id": "e3f2b845-8f2c-4b5a-9caf-eac1029d3e7e",
   "revision": 0,
-  "last_node_id": 262,
-  "last_link_id": 563,
+  "last_node_id": 265,
+  "last_link_id": 571,
   "nodes": [
     {
       "id": 207,
@@ -154,7 +154,7 @@
           "type": "AUDIO",
           "links": [
             543,
-            563
+            568
           ]
         }
       ],
@@ -229,7 +229,7 @@
           "links": [
             522,
             535,
-            557
+            564
           ]
         },
         {
@@ -238,7 +238,7 @@
           "links": [
             523,
             536,
-            558
+            565
           ]
         },
         {
@@ -247,7 +247,7 @@
           "links": [
             524,
             537,
-            559
+            566
           ]
         },
         {
@@ -256,7 +256,7 @@
           "links": [
             525,
             538,
-            560
+            567
           ]
         },
         {
@@ -293,56 +293,6 @@
         "vae_name_1": "minimax_h3_audio_vae_fp32.safetensors",
         "value": 8,
         "attention": "comfy kitchen attention"
-      },
-      "color": "#222",
-      "bgcolor": "#000"
-    },
-    {
-      "id": 213,
-      "type": "easy showAnything",
-      "pos": [
-        936.7658441648375,
-        5666.810103037483
-      ],
-      "size": [
-        393.09008749709176,
-        531.4238194789432
-      ],
-      "flags": {
-        "collapsed": false
-      },
-      "order": 12,
-      "mode": 4,
-      "inputs": [
-        {
-          "name": "anything",
-          "shape": 7,
-          "type": "*",
-          "link": 521
-        }
-      ],
-      "outputs": [
-        {
-          "name": "output",
-          "type": "*",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui-easy-use",
-        "ver": "1.4.1",
-        "Node name for S&R": "easy showAnything",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        "Soft erotic ambient music for tender intimate sex.\n\nSlow tempo (around 60–75 BPM), warm and sensual atmosphere.Style:\nSoft deep bass pulse\nGentle warm pads\nDelicate piano or soft electric piano notes\nLight breathy female vocal textures (wordless, very subtle)\nSmooth atmospheric layers\nQuiet intimate reverb\nMood: sensual, emotional, slow, romantic and erotic at the same time.\n\nNo heavy beats, no aggressive sounds, no lyrics.\n\nPerfect background for soft passionate lovemaking.High quality, cinematic, smooth"
-      ],
-      "widgets_values_named": {
-        "text": "Soft erotic ambient music for tender intimate sex.\n\nSlow tempo (around 60–75 BPM), warm and sensual atmosphere.Style:\nSoft deep bass pulse\nGentle warm pads\nDelicate piano or soft electric piano notes\nLight breathy female vocal textures (wordless, very subtle)\nSmooth atmospheric layers\nQuiet intimate reverb\nMood: sensual, emotional, slow, romantic and erotic at the same time.\n\nNo heavy beats, no aggressive sounds, no lyrics.\n\nPerfect background for soft passionate lovemaking.High quality, cinematic, smooth"
       },
       "color": "#222",
       "bgcolor": "#000"
@@ -448,7 +398,7 @@
           "name": "conditioning_prompt",
           "type": "STRING",
           "links": [
-            521
+            571
           ]
         }
       ],
@@ -614,7 +564,7 @@
         "",
         "[Speaker 1]\nHello! How are you?\n\n[Speaker 2]\nI'm doing well, thank you!",
         1,
-        "Balanced",
+        "Compact",
         "bird singing, forest ambience",
         "",
         "Female",
@@ -649,7 +599,7 @@
         "custom_speech_language": "",
         "dialogue_script": "[Speaker 1]\nHello! How are you?\n\n[Speaker 2]\nI'm doing well, thank you!",
         "speaking_speed_hint": 1,
-        "duration_profile": "Balanced",
+        "duration_profile": "Compact",
         "prompt": "bird singing, forest ambience",
         "speech_text": "",
         "voice_type": "Female",
@@ -827,145 +777,6 @@
       "bgcolor": "#000"
     },
     {
-      "id": 257,
-      "type": "MiniMaxH3AudioGenerator",
-      "pos": [
-        1365.7262845202306,
-        5223.148525702996
-      ],
-      "size": [
-        530.0500000000002,
-        600
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 557
-        },
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 558
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 559
-        },
-        {
-          "name": "audio_vae",
-          "type": "VAE",
-          "link": 560
-        },
-        {
-          "name": "ref_audio",
-          "shape": 7,
-          "type": "AUDIO",
-          "link": 563
-        }
-      ],
-      "outputs": [
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "links": [
-            554
-          ]
-        },
-        {
-          "name": "conditioning_prompt",
-          "type": "STRING",
-          "links": [
-            555
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "MiniMaxH3AudioGenerator",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        "Expressive TTS",
-        "Single Voice",
-        "Auto",
-        "",
-        "[Speaker 1]\nHello! How are you?\n\n[Speaker 2]\nI'm doing well, thank you!",
-        1,
-        "Balanced",
-        "bird singing, forest ambience",
-        "[softly] I was thinking about you today.\n[pause=500ms]\n[happy] And I have some wonderful news!\n[laughing] I still can't believe it.",
-        "Female",
-        "",
-        "Natural",
-        "Natural Conversation",
-        "Neutral",
-        50,
-        1,
-        0,
-        "Clone voice identity",
-        "",
-        "Natural Conversation",
-        "Neutral",
-        50,
-        0,
-        0,
-        124,
-        0,
-        "randomize",
-        20,
-        "res_multistep",
-        "simple",
-        1,
-        false,
-        "match"
-      ],
-      "widgets_values_named": {
-        "generation_mode": "Expressive TTS",
-        "expressive_tts_mode": "Single Voice",
-        "speech_language": "Auto",
-        "custom_speech_language": "",
-        "dialogue_script": "[Speaker 1]\nHello! How are you?\n\n[Speaker 2]\nI'm doing well, thank you!",
-        "speaking_speed_hint": 1,
-        "duration_profile": "Balanced",
-        "prompt": "bird singing, forest ambience",
-        "speech_text": "[softly] I was thinking about you today.\n[pause=500ms]\n[happy] And I have some wonderful news!\n[laughing] I still can't believe it.",
-        "voice_type": "Female",
-        "custom_voice_description": "",
-        "voice_timbre": "Natural",
-        "speaking_style": "Natural Conversation",
-        "emotion": "Neutral",
-        "emotion_intensity": 50,
-        "speech_speed": 1,
-        "speech_pitch": 0,
-        "voice_reference_mode": "Clone voice identity",
-        "cloning_instructions": "",
-        "expressive_default_style": "Natural Conversation",
-        "expressive_default_emotion": "Neutral",
-        "expressive_default_intensity": 50,
-        "expressive_default_speed": 0,
-        "expressive_default_pitch": 0,
-        "length": 124,
-        "seed": 0,
-        "control_after_generate": "randomize",
-        "steps": 20,
-        "sampler_name": "res_multistep",
-        "scheduler": "simple",
-        "denoise": 1,
-        "use_references": false,
-        "ref_image_size": "match"
-      },
-      "color": "#222",
-      "bgcolor": "#000"
-    },
-    {
       "id": 258,
       "type": "PreviewAudio",
       "pos": [
@@ -983,7 +794,7 @@
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 554
+          "link": 569
         }
       ],
       "outputs": [
@@ -1082,7 +893,7 @@
           "name": "anything",
           "shape": 7,
           "type": "*",
-          "link": 555
+          "link": 570
         }
       ],
       "outputs": [
@@ -1166,7 +977,13 @@
       "mode": 0,
       "inputs": [],
       "outputs": [],
-      "properties": {},
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
       "widgets_values": [
         "if you use base model than steps must be 20\nwith turbo lora 8 (6, 4 according to lora or turbo model)"
       ],
@@ -1175,6 +992,186 @@
       },
       "color": "#432",
       "bgcolor": "#653"
+    },
+    {
+      "id": 263,
+      "type": "MiniMaxH3AudioGenerator",
+      "pos": [
+        1363.2258960448578,
+        5234.043706991694
+      ],
+      "size": [
+        536.1944027047336,
+        600
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 564
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 565
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 566
+        },
+        {
+          "name": "audio_vae",
+          "type": "VAE",
+          "link": 567
+        },
+        {
+          "name": "ref_audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": 568
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            569
+          ]
+        },
+        {
+          "name": "conditioning_prompt",
+          "type": "STRING",
+          "links": [
+            570
+          ]
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "Node name for S&R": "MiniMaxH3AudioGenerator"
+      },
+      "widgets_values": [
+        "Expressive TTS",
+        "Single Voice",
+        "English",
+        "",
+        "[Speaker 1]\nHello! How are you?\n\n[Speaker 2]\nI'm doing well, thank you!",
+        1,
+        "Balanced",
+        "bird singing, forest ambience",
+        "[softly] I was thinking about you today.\n[pause=500ms]\n[happy] And I have some wonderful news!\n[laughing] I still can't believe it.",
+        "Male",
+        "",
+        "Deep",
+        "Natural Conversation",
+        "Neutral",
+        50,
+        1,
+        0,
+        "Clone voice identity",
+        "",
+        "Natural Conversation",
+        "Calm",
+        80,
+        1,
+        0,
+        124,
+        502320854493755,
+        "randomize",
+        8,
+        "euler",
+        "simple",
+        1,
+        false,
+        "match"
+      ],
+      "widgets_values_named": {
+        "generation_mode": "Expressive TTS",
+        "expressive_tts_mode": "Single Voice",
+        "speech_language": "English",
+        "custom_speech_language": "",
+        "dialogue_script": "[Speaker 1]\nHello! How are you?\n\n[Speaker 2]\nI'm doing well, thank you!",
+        "speaking_speed_hint": 1,
+        "duration_profile": "Balanced",
+        "prompt": "bird singing, forest ambience",
+        "speech_text": "[softly] I was thinking about you today.\n[pause=500ms]\n[happy] And I have some wonderful news!\n[laughing] I still can't believe it.",
+        "voice_type": "Male",
+        "custom_voice_description": "",
+        "voice_timbre": "Deep",
+        "speaking_style": "Natural Conversation",
+        "emotion": "Neutral",
+        "emotion_intensity": 50,
+        "speech_speed": 1,
+        "speech_pitch": 0,
+        "voice_reference_mode": "Clone voice identity",
+        "cloning_instructions": "",
+        "expressive_default_style": "Natural Conversation",
+        "expressive_default_emotion": "Calm",
+        "expressive_default_intensity": 80,
+        "expressive_default_speed": 1,
+        "expressive_default_pitch": 0,
+        "length": 124,
+        "seed": 502320854493755,
+        "control_after_generate": "randomize",
+        "steps": 8,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1,
+        "use_references": false,
+        "ref_image_size": "match"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 265,
+      "type": "easy showAnything",
+      "pos": [
+        953.7697892026079,
+        5655.627490154109
+      ],
+      "size": [
+        348.76714843750017,
+        539.0399261474613
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "anything",
+          "shape": 7,
+          "type": "*",
+          "link": 571
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "*",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-easy-use",
+        "ver": "1.4.1",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {}
+        },
+        "Node name for S&R": "easy showAnything"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
     }
   ],
   "links": [
@@ -1185,14 +1182,6 @@
       206,
       0,
       "AUDIO"
-    ],
-    [
-      521,
-      246,
-      1,
-      213,
-      0,
-      "STRING"
     ],
     [
       546,
@@ -1207,22 +1196,6 @@
       249,
       1,
       255,
-      0,
-      "STRING"
-    ],
-    [
-      554,
-      257,
-      0,
-      258,
-      0,
-      "AUDIO"
-    ],
-    [
-      555,
-      257,
-      1,
-      260,
       0,
       "STRING"
     ],
@@ -1339,44 +1312,68 @@
       "AUDIO"
     ],
     [
-      557,
+      564,
       208,
       0,
-      257,
+      263,
       0,
       "MODEL"
     ],
     [
-      558,
+      565,
       208,
       1,
-      257,
+      263,
       1,
       "CLIP"
     ],
     [
-      559,
+      566,
       208,
       2,
-      257,
+      263,
       2,
       "VAE"
     ],
     [
-      560,
+      567,
       208,
       3,
-      257,
+      263,
       3,
       "VAE"
     ],
     [
-      563,
+      568,
       209,
       0,
-      257,
+      263,
       4,
       "AUDIO"
+    ],
+    [
+      569,
+      263,
+      0,
+      258,
+      0,
+      "AUDIO"
+    ],
+    [
+      570,
+      263,
+      1,
+      260,
+      0,
+      "STRING"
+    ],
+    [
+      571,
+      246,
+      1,
+      265,
+      0,
+      "STRING"
     ]
   ],
   "groups": [
@@ -1436,8 +1433,8 @@
         "version": 1,
         "state": {
           "lastGroupId": 9,
-          "lastNodeId": 262,
-          "lastLinkId": 563,
+          "lastNodeId": 265,
+          "lastLinkId": 571,
           "lastRerouteId": 0
         },
         "revision": 0,
@@ -2178,10 +2175,15 @@
     "ds": {
       "scale": 0.6830134553650705,
       "offset": [
-        1451.4250183633376,
-        -4955.280978211765
+        1354.7307771447615,
+        -4940.633111018489
       ]
     }
   },
-  "version": 0.4
+  "version": 0.4,
+  "seed_widgets": {
+    "246": 25,
+    "249": 25,
+    "263": 25
+  }
 }
